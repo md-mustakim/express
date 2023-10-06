@@ -5,6 +5,7 @@ import {Response} from "express";
 const apiResponse = {
 
     structure: ( res: Response, statusCode: number, status: string, data: any, message: string) => {
+        res.setHeader('Content-Type', 'application/json');
         return res.status(statusCode).json({
             status,
             message,
