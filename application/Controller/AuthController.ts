@@ -6,8 +6,9 @@ import Query from "../Helper/Query";
 const AuthController = {
     login: (req: Request, res: Response) => {
 
-        Query.get('SELECT 1 + 1 AS solution').then((result) => {
-            res.json([result]);
+        Query.get('select * from users where id=?', [1]).then((result) => {
+
+            res.json(result);
         }).catch((err) => {
             console.log(err);
             res.send(err);

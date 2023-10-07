@@ -16,8 +16,7 @@ export default class Connection {
         if (this.connection) {
             return this.connection;
         }
-        this.connection = mysql.createConnection(this.databaseConfig());
-        return this.connection;
+       return mysql.createPool(this.databaseConfig());
     }
 
     public static async closeConnection() {
