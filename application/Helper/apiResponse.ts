@@ -12,40 +12,40 @@ const apiResponse = {
             data
         });
     },
-    success: (res: Response, data: any, message: string) => {
+    success: (res: Response, message: string, data: any) => {
         return apiResponse.structure(res, 200, "Success", data, message);
     },
-    created: (res: Response, data: any, message: string) => {
+    created: (res: Response,  message: string, data: any) => {
         return apiResponse.structure(res, 201, "Created", data, message);
     },
-    notFound: (res: Response, data: any, message: string) => {
+    notFound: (res: Response,  message: string, data: any) => {
        return apiResponse.structure(res, 404, "Not Found", data, message);
     },
-    badRequest: (res: Response, data: any, message: string) => {
+    badRequest: (res: Response,  message: string, data: any) => {
         return apiResponse.structure(res, 400, "Bad Request", data, message);
     },
-    unauthorized: (res: Response, data: any, message: string) => {
+    unauthorized: (res: Response,  message: string, data: any) => {
         return apiResponse.structure(res, 401, "Unauthorized", data, message);
     },
-    forbidden: (res: Response, data: any, message: string) => {
+    forbidden: (res: Response,  message: string, data: any) => {
         return apiResponse.structure(res, 403, "Forbidden", data, message);
     },
-    unprocessable: (res: Response, data: any, message: string) => {
+    unprocessable: (res: Response,  message: string, data: any) => {
         return apiResponse.structure(res, 422, "Unprocessable", data, message);
     },
-    internalServerError: (res: Response, data: any, message: string) => {
+    internalServerError: (res: Response,  message: string, data: any) => {
         return apiResponse.structure(res, 500, "Internal Server Error", data, message);
     },
-    serviceUnavailable: (res: Response, data: any, message: string) => {
+    serviceUnavailable: (res: Response,  message: string, data: any) => {
         return apiResponse.structure(res, 503, "Service Unavailable", data, message);
     },
-    validationError: (res: Response, data: any, message: string) => {
+    validationError: (res: Response,  message: string, data: any) => {
         return apiResponse.structure(res, 422, "Validation Error", data, message);
     },
-    validationErrorWithData: (res: Response, data: any, message: string) => {
+    validationErrorWithData: (res: Response,  message: string, data: any) => {
         return apiResponse.structure(res, 422, "Validation Error", data, message);
     },
-    error: (res: Response, data: any, message: string) => {
+    error: (res: Response,  message: string, data: any) => {
         return apiResponse.structure(res, 500, "Error", data, message);
     }
 
