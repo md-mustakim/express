@@ -5,7 +5,10 @@ import {Response} from "express";
 const apiResponse = {
 
     structure: ( res: Response, statusCode: number, status: string, data: any, message: string) => {
+        res.setHeader('Token', 'tms-server-token');
         res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+        res.setHeader('Expires', '0');
         return res.status(statusCode).json({
             status,
             message,

@@ -3,6 +3,7 @@ import * as bcrypt from 'bcryptjs';
 const Model =  {
 
     async queryExecute(query: string, params: any = []) {
+
         try {
             const connection = await Connection.getConnection();
             return await new Promise((resolve, reject) => {
@@ -14,9 +15,11 @@ const Model =  {
                     }
                 });
             });
+
         } catch (err) {
             return Promise.reject(err);
         }
+
     },
      async get(query: string, params: any = []) {
         return await this.queryExecute(query, params);
@@ -27,7 +30,9 @@ const Model =  {
     },
     passwordVerify(password: string, hash: string) {
         return bcrypt.compareSync(password, hash);
-
+    },
+    passwordHash(password: string) {
+        return bcrypt.hashSync(password, bcrypt.genSaltSync(12));
     }
 }
 
