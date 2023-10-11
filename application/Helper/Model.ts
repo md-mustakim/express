@@ -1,5 +1,9 @@
 import Connection from "../Database/Connection";
 import * as bcrypt from 'bcryptjs';
+import jwt from "jsonwebtoken";
+import HelperFunction from "./HelperFunction";
+
+
 const Model =  {
 
     async queryExecute(query: string, params: any = []) {
@@ -33,6 +37,29 @@ const Model =  {
     },
     passwordHash(password: string) {
         return bcrypt.hashSync(password, bcrypt.genSaltSync(12));
+    },
+    createJWTToken(payload: any) {
+        let token:any = process.env.TOKEN_SECRET;
+        console.log(token);
+        return jwt.sign(payload, token, { expiresIn: '1h' });
+    },
+    verifyJWTToken(token: string) {
+
+        try{
+
+            let secret: any = HelperFunction.env('TOKEN_SECRET');
+            jwt.verify(token, secret, (err: any, decoded: any) => {
+                console.log(err, decoded);
+
+
+            });
+            return true;
+        }catch(err){
+            console.log(err);
+            return false;
+        }
+
+
     }
 }
 

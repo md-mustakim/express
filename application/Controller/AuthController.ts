@@ -1,9 +1,7 @@
 import  { Request, Response } from 'express';
-import Connection from "../Database/Connection";
-import Model from "../Helper/Model";
-import {ValidationError, validationResult} from "express-validator";
+
 import apiResponse from "../Helper/apiResponse";
-import HelperFunction from "../Helper/HelperFunction";
+
 
 
 

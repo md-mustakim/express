@@ -1,15 +1,15 @@
 import express, {  Request, Response, Router } from 'express';
-import AuthController from "../../../Controller/AuthController";
 import {body, validationResult} from "express-validator";
 import HelperFunction from "../../../Helper/HelperFunction";
 import apiResponse from "../../../Helper/apiResponse";
 import Model from "../../../Helper/Model";
 
 
-const router: Router = Router();
 
+const router: Router = Router();
 router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
+
 
 router.post('/register',[
     body('name')
@@ -48,6 +48,7 @@ router.post('/register',[
     let query = "INSERT INTO users (name, phone, password) VALUES (?, ?, ?)";
     let params = [name, phone, password];
     let r = Model.queryExecute(query, params).then((result: any) => {
+
         console.log(result);
         return apiResponse.success(res, 'Registration is Successful', []);
     }).catch((err: any) => {
@@ -73,7 +74,27 @@ router.post('/login',[
         if (result.length > 0) {
             let passwordVerify = Model.passwordVerify(password, result[0].password);
             if (passwordVerify) {
-                return apiResponse.success(res, 'Login is Successful', []);
+                let accessToken = Model.createJWTToken({id: result[0].id});
+
+                // store token in database for future use
+                let query = "INSERT INTO access_tokens (name, token, expired_at, user_id, ip, u_a) VALUES (?, ?, ?, ?, ?, ?)";
+                let params = ['access_token', accessToken, HelperFunction.getDateTime(3600), result[0].id, req.ip, req.headers['user-agent']];
+
+                Model.queryExecute(query, params).then(r => {
+                    console.log(r);
+                });
+
+                let user = result[0];
+                // remove password from user object
+                delete user.password;
+
+                return apiResponse.success(res, 'Login is Successful', {
+                    accessToken: {
+                        token: accessToken,
+                        expiresInSec: 3600
+                    },
+                    user: result[0]
+                });
             } else {
                 return apiResponse.unauthorized(res, 'Password is incorrect', []);
             }
