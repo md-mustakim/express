@@ -15,11 +15,10 @@ app.post('/test', (req, res) => {
     let body = req.body;
 });
 app.get('/', (req, res) => {
-    // get user ip address
     const ip = req.ips.length > 0 ? req.ips[0] : req.ip;
-    // get user agent
-    const userAgent = new UserAgent_1.default(req.headers['user-agent'] || '').getWithDevice();
-    apiResponse_1.default.success(res, 'Welcome to Track My Show API Server 👌', { ip: ip, userAgent: userAgent });
+    const userAgentNew = new UserAgent_1.default(req).get();
+    res.end('s');
+    // apiResponse.success(res, 'Welcome to Track My Show API Server 👌', { ip: ip, userAgent: 'userAgent'});
 });
 app.use('/api/v1/auth', api_1.default);
 app.use('/api/v1', authenticatedRouter_1.default);

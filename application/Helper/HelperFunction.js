@@ -20,5 +20,8 @@ class HelperFunction {
         dotenv_1.default.config();
         return process.env[key];
     }
+    static getIpAddress(req) {
+        return req.ips.length > 0 ? req.ips[0] : req.ip;
+    }
 }
 exports.default = HelperFunction;

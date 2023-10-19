@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const apiResponse = {
     structure: (res, statusCode, status, data, message) => {
-        res.setHeader('Token', 'tms-server-token');
         res.setHeader('Content-Type', 'application/json');
         res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
         res.setHeader('Expires', '0');

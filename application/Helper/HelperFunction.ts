@@ -1,3 +1,4 @@
+import {  Request } from 'express';
 import configDotenv from "dotenv";
 export default class HelperFunction{
     public static validationErrorFormat({msg, path}: any)  {
@@ -15,6 +16,10 @@ export default class HelperFunction{
     public static env(key: string) {
         configDotenv.config();
         return process.env[key];
+    }
+
+    public static getIpAddress(req: Request):string {
+        return req.ips.length > 0 ? req.ips[0] : req.ip;
     }
 }
 

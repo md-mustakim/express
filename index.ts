@@ -7,7 +7,8 @@ import UserAgent from "./application/Helper/UserAgent";
 import router from "./application/Router/api/v1/api";
 import {query} from "express-validator";
 import authenticateRouter from "./application/Router/api/v1/authenticatedRouter";
-
+import HelperFunction from "./application/Helper/HelperFunction";
+import UAParser from "ua-parser-js";
 
 
 const app: Express = express();
@@ -23,13 +24,10 @@ app.post('/test'
 });
 
 
-app.get('/', (req: Request, res: Response) => {
-
-    // get user ip address
-    const ip =  req.ips.length > 0 ? req.ips[0] : req.ip;
-    // get user agent
-    const userAgent = new UserAgent(req.headers['user-agent']||'').getWithDevice() ;
-    apiResponse.success(res, 'Welcome to Track My Show API Server 👌', { ip: ip, userAgent: userAgent });
+app.get('/', async (req: Request, res: Response) => {
+    const ip = req.ips.length > 0 ? req.ips[0] : req.ip;
+    const ua = await new UserAgent().get(req);
+    apiResponse.success(res, 'Welcome to Track My Show API Server 👌', {ip: ip, userAgent: ua});
 
 });
 app.use('/api/v1/auth', router);
