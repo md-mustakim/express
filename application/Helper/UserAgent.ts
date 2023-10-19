@@ -7,11 +7,22 @@ export default class UserAgent {
 
             const parser: UAParser.UAParserInstance = new UAParser();
             try{
+
                 const userAgent: any = req.headers['user-agent'] || null;
                 const result = parser.setUA(userAgent).getResult();
+                console.log(result.device);
                 if (result.browser.name && result.os.name) {
+
+                    if(result.device.vendor && result.device.model){
+                        resolve(result.browser.name + ' ' + result.browser.version + ' on ' + result.os.name + ' ' + result.os.version + ' of ' + result.device.vendor + ' ' + result.device.model);
+                    }
+
                     resolve(result.browser.name + ' ' + result.browser.version + ' on ' + result.os.name + ' ' + result.os.version);
+
+
                 }
+
+
 
                 if (result.browser.name) {
                     resolve('browser');

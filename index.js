@@ -26,7 +26,7 @@ app.post('/test', (req, res) => {
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const ip = req.ips.length > 0 ? req.ips[0] : req.ip;
     const ua = yield new UserAgent_1.default().get(req);
-    apiResponse_1.default.success(res, 'Welcome to Track My Show API Server 👌', { ip: ip, userAgent: ua });
+    apiResponse_1.default.success(res, 'Welcome to Track My Show API Server 👌', { ip: ip, device: ua });
 }));
 app.use('/api/v1/auth', api_1.default);
 app.use('/api/v1', authenticatedRouter_1.default);

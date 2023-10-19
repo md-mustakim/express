@@ -27,7 +27,7 @@ app.post('/test'
 app.get('/', async (req: Request, res: Response) => {
     const ip = req.ips.length > 0 ? req.ips[0] : req.ip;
     const ua = await new UserAgent().get(req);
-    apiResponse.success(res, 'Welcome to Track My Show API Server 👌', {ip: ip, userAgent: ua});
+    apiResponse.success(res, 'Welcome to Track My Show API Server 👌', {ip: ip, device: ua});
 
 });
 app.use('/api/v1/auth', router);
