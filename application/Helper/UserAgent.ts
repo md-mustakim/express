@@ -3,14 +3,13 @@ import {Request} from 'express';
 
 export default class UserAgent {
     public get(req: Request): Promise<string> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
 
             const parser: UAParser.UAParserInstance = new UAParser();
             try{
 
                 const userAgent: any = req.headers['user-agent'] || null;
                 const result = parser.setUA(userAgent).getResult();
-                console.log(result.device);
                 if (result.browser.name && result.os.name) {
 
                     if(result.device.vendor && result.device.model){
