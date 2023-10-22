@@ -40,15 +40,8 @@ const ipv4AndIpv6 = (ip) => {
 };
 app.use(express_1.default.json());
 app.use('/public', express_1.default.static('public'));
-app.post('/test', (req, res) => {
-    let body = req.body;
-});
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const ip = req.ips.length > 0 ? req.ips[0] : req.ip;
-    let tempIp = ip.split(':').pop(); // 127.0.0.1
-    // check this ipv4 validity
-    console.log(ipv4AndIpv6(req.ip));
-    const ipv6Address = ip.split(':').shift();
     const ua = yield new UserAgent_1.default().get(req);
     apiResponse_1.default.success(res, 'Welcome to Track My Show API Server 👌', { ip: ipv4AndIpv6(req.ip), device: ua });
 }));
