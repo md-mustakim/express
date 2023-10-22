@@ -1,14 +1,10 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
 
 import apiResponse from "./application/Helper/apiResponse";
-
-
 import UserAgent from "./application/Helper/UserAgent";
 import router from "./application/Router/api/v1/api";
-import {query} from "express-validator";
 import authenticateRouter from "./application/Router/api/v1/authenticatedRouter";
-import HelperFunction from "./application/Helper/HelperFunction";
-import UAParser from "ua-parser-js";
+
 
 
 const app: Express = express();
@@ -41,31 +37,13 @@ app.use(express.json());
 app.use('/public', express.static('public'));
 
 
-app.post('/test'
-,(req: Request, res: Response) => {
-    let body = req.body;
-});
-
-
 app.get('/', async (req: Request, res: Response) => {
-
-
-
-
     const ip = req.ips.length > 0 ? req.ips[0] : req.ip;
-    let tempIp = ip.split(':').pop(); // 127.0.0.1
-    // check this ipv4 validity
-
-
-
-    console.log(ipv4AndIpv6(req.ip));
-
-    const ipv6Address = ip.split(':').shift();
-
     const ua = await new UserAgent().get(req);
     apiResponse.success(res, 'Welcome to Track My Show API Server 👌', {ip: ipv4AndIpv6(req.ip), device: ua});
 
 });
+
 app.use('/api/v1/auth', router);
 app.use('/api/v1', authenticateRouter);
 app.use((req: Request, res: Response) => {
