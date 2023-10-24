@@ -98,7 +98,7 @@ authenticateRouter.post('/organizer',
 
 
 authenticateRouter.get('/event', (req, res) => {
-    const organizerEventQuery = 'select * from organizer_events';
+    const organizerEventQuery = 'select * from organizer_events order by id desc';
     Model.get(organizerEventQuery).then((result: any) => {
         result = result.map((event: any) => {
             event.cover = HelperFunction.env('APP_URL') + '/public/event/' + event.cover;
@@ -110,6 +110,23 @@ authenticateRouter.get('/event', (req, res) => {
     });
 
 });
+
+
+authenticateRouter.get('/event-by-organization/:id', (req, res) => {
+    const organizerEventQuery = 'select * from organizer_events where organizer_id = ?';
+    const params = [req.params.id];
+    Model.get(organizerEventQuery, params).then((result: any) => {
+        result = result.map((event: any) => {
+            event.cover = HelperFunction.env('APP_URL') + '/public/event/' + event.cover;
+            return event;
+        });
+        apiResponse.success(res, 'Events', result);
+    }).catch((err: any) => {
+        apiResponse.error(res, 'Error', err);
+    });
+
+});
+
 
 
 const eventStorage = multer.diskStorage({
@@ -159,8 +176,8 @@ authenticateRouter.post('/event', eventImageUpload.single('cover'),[
     let {name, slug, description, organizer_id, scheduled_at, category_id, ticket_price, about, story, venue_id, features_id} = body;
     let cover = req.file.filename;
     console.log(req.file);
-    const organizerEventQuery = 'INSERT INTO `organizer_events`(`name`, `slug`, `description`, `category_id`, `cover`, `scheduled_at`, `ticket_price`, `about`, `story`, `venue_id`, `features_id`, `created_by`, `u_a`, `ip`, `created_at`, `updated_at`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
-    const organizerEventParams = [name, slug, description, category_id, cover, scheduled_at, ticket_price, about, story, venue_id, features_id,1, req.headers['user-agent'], req.ip, HelperFunction.getDateTime(0), HelperFunction.getDateTime(0)];
+    const organizerEventQuery = 'INSERT INTO `organizer_events`(`name`, `slug`, `description`, `category_id`, `cover`, `scheduled_at`, `ticket_price`, `about`, `story`, `venue_id`, `organizer_id`, `features_id`, `created_by`, `u_a`, `ip`, `created_at`, `updated_at`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+    const organizerEventParams = [name, slug, description, category_id, cover, scheduled_at, ticket_price, about, story, venue_id, organizer_id, features_id,1, req.headers['user-agent'], req.ip, HelperFunction.getDateTime(0), HelperFunction.getDateTime(0)];
 
     Model.queryExecute(organizerEventQuery, organizerEventParams).then((result: any) => {
         console.log(result);
@@ -168,6 +185,40 @@ authenticateRouter.post('/event', eventImageUpload.single('cover'),[
     }).catch((err: any) => {
         return apiResponse.error(res, err.message, []);
     });
+});
+
+authenticateRouter.get('/venue', (req, res) => {
+    const venueQuery = 'select * from venues order by id desc';
+    Model.get(venueQuery).then((result: any) => {
+        apiResponse.success(res, 'All Venue', result);
+    }).catch((err: any) => {
+        apiResponse.error(res, 'Error', err);
+    });
+});
+
+authenticateRouter.post('/venue',[
+    body('name').notEmpty().withMessage('Name is required'),
+    body('address').notEmpty().withMessage('Address is required'),
+], (req: Request, res: Response) => {
+
+    const errors = validationResult(req).formatWith(HelperFunction.validationErrorFormat);
+    if (!errors.isEmpty()) {
+        return apiResponse.validationErrorWithData(res, 'Validation Error', errors.array());
+    }
+
+    let {name, address, latitude, longitude, google_map_url} = req.body;
+    const venueQuery = 'INSERT INTO `venues`(`name`, `address`, `latitude`, `longitude`, `google_map_url`, `created_u_a`, `created_ip`, `created_by`, `created_at`, `updated_at`) VALUES (?,?,?,?,?,?,?,?,?,?)';
+    const venueParams = [name, address, latitude, longitude, google_map_url, req.headers['user-agent'], req.ip, 1, HelperFunction.getDateTime(0), HelperFunction.getDateTime(0)];
+
+    Model.queryExecute(venueQuery, venueParams).then((result: any) => {
+        return apiResponse.success(res, 'Venue Create successfully', []);
+    }).catch((err: any) => {
+        return apiResponse.error(res, err.message, []);
+    });
+
+
+
+
 });
 
 
