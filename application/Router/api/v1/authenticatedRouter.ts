@@ -216,10 +216,66 @@ authenticateRouter.post('/venue',[
         return apiResponse.error(res, err.message, []);
     });
 
-
-
-
 });
+
+
+authenticateRouter.get('/category', (req, res) => {
+    const categoryQuery = 'select * from categories order by id desc';
+    Model.get(categoryQuery).then((result: any) => {
+        apiResponse.success(res, 'All Category', result);
+    }).catch((err: any) => {
+        apiResponse.error(res, 'Error', err);
+    });
+});
+
+authenticateRouter.post('/category',[
+    body('name').notEmpty().withMessage('Name is required'),
+
+],(req: Request, res: Response)=>{
+    const errors = validationResult(req).formatWith(HelperFunction.validationErrorFormat);
+    if (!errors.isEmpty()) {
+        return apiResponse.validationErrorWithData(res, 'Validation Error', errors.array());
+    }
+    let {name} = req.body;
+    const categoryQuery = 'INSERT INTO `categories`(`name`, `created_u_a`, `created_ip`, `created_by`, `created_at`, `updated_at`) VALUES (?,?,?,?,?,?)';
+    const categoryParams = [name, req.headers['user-agent'], req.ip, 1, HelperFunction.getDateTime(0), HelperFunction.getDateTime(0)];
+
+    Model.queryExecute(categoryQuery, categoryParams).then((result: any) => {
+        return apiResponse.success(res, 'Category Create successfully', []);
+    }).catch((err: any) => {
+        return apiResponse.error(res, err.message, []);
+    });
+});
+
+authenticateRouter.get('/feature', (req, res) => {
+    const featureQuery = 'select * from features order by id desc';
+    Model.get(featureQuery).then((result: any) => {
+        apiResponse.success(res, 'All Feature', result);
+    }).catch((err: any) => {
+        apiResponse.error(res, 'Error', err);
+    });
+});
+
+authenticateRouter.post('/feature',[
+    body('name').notEmpty().withMessage('Name is required'),
+
+],(req: Request, res: Response)=>{
+    const errors = validationResult(req).formatWith(HelperFunction.validationErrorFormat);
+    if (!errors.isEmpty()) {
+        return apiResponse.validationErrorWithData(res, 'Validation Error', errors.array());
+    }
+    let {name} = req.body;
+    const featureQuery = 'INSERT INTO `features`(`name`, `created_u_a`, `created_ip`, `created_by`, `created_at`, `updated_at`) VALUES (?,?,?,?,?,?)';
+    const featureParams = [name, req.headers['user-agent'], req.ip, 1, HelperFunction.getDateTime(0), HelperFunction.getDateTime(0)];
+
+    Model.queryExecute(featureQuery, featureParams).then((result: any) => {
+        return apiResponse.success(res, 'Feature Create successfully', []);
+    }).catch((err: any) => {
+        return apiResponse.error(res, err.message, []);
+    });
+});
+
+
 
 
 

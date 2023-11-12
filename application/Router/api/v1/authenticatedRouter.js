@@ -216,4 +216,52 @@ authenticateRouter.post('/venue', [
         return apiResponse_1.default.error(res, err.message, []);
     });
 });
+authenticateRouter.get('/category', (req, res) => {
+    const categoryQuery = 'select * from categories order by id desc';
+    Model_1.default.get(categoryQuery).then((result) => {
+        apiResponse_1.default.success(res, 'All Category', result);
+    }).catch((err) => {
+        apiResponse_1.default.error(res, 'Error', err);
+    });
+});
+authenticateRouter.post('/category', [
+    (0, express_validator_1.body)('name').notEmpty().withMessage('Name is required'),
+], (req, res) => {
+    const errors = (0, express_validator_1.validationResult)(req).formatWith(HelperFunction_1.default.validationErrorFormat);
+    if (!errors.isEmpty()) {
+        return apiResponse_1.default.validationErrorWithData(res, 'Validation Error', errors.array());
+    }
+    let { name } = req.body;
+    const categoryQuery = 'INSERT INTO `categories`(`name`, `created_u_a`, `created_ip`, `created_by`, `created_at`, `updated_at`) VALUES (?,?,?,?,?,?)';
+    const categoryParams = [name, req.headers['user-agent'], req.ip, 1, HelperFunction_1.default.getDateTime(0), HelperFunction_1.default.getDateTime(0)];
+    Model_1.default.queryExecute(categoryQuery, categoryParams).then((result) => {
+        return apiResponse_1.default.success(res, 'Category Create successfully', []);
+    }).catch((err) => {
+        return apiResponse_1.default.error(res, err.message, []);
+    });
+});
+authenticateRouter.get('/feature', (req, res) => {
+    const featureQuery = 'select * from features order by id desc';
+    Model_1.default.get(featureQuery).then((result) => {
+        apiResponse_1.default.success(res, 'All Feature', result);
+    }).catch((err) => {
+        apiResponse_1.default.error(res, 'Error', err);
+    });
+});
+authenticateRouter.post('/feature', [
+    (0, express_validator_1.body)('name').notEmpty().withMessage('Name is required'),
+], (req, res) => {
+    const errors = (0, express_validator_1.validationResult)(req).formatWith(HelperFunction_1.default.validationErrorFormat);
+    if (!errors.isEmpty()) {
+        return apiResponse_1.default.validationErrorWithData(res, 'Validation Error', errors.array());
+    }
+    let { name } = req.body;
+    const featureQuery = 'INSERT INTO `features`(`name`, `created_u_a`, `created_ip`, `created_by`, `created_at`, `updated_at`) VALUES (?,?,?,?,?,?)';
+    const featureParams = [name, req.headers['user-agent'], req.ip, 1, HelperFunction_1.default.getDateTime(0), HelperFunction_1.default.getDateTime(0)];
+    Model_1.default.queryExecute(featureQuery, featureParams).then((result) => {
+        return apiResponse_1.default.success(res, 'Feature Create successfully', []);
+    }).catch((err) => {
+        return apiResponse_1.default.error(res, err.message, []);
+    });
+});
 exports.default = authenticateRouter;
