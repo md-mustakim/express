@@ -264,4 +264,29 @@ authenticateRouter.post('/feature', [
         return apiResponse_1.default.error(res, err.message, []);
     });
 });
+// district
+authenticateRouter.get('/district', (req, res) => {
+    const districtQuery = 'select * from districts order by id desc';
+    Model_1.default.get(districtQuery).then((result) => {
+        apiResponse_1.default.success(res, 'All District', result);
+    }).catch((err) => {
+        apiResponse_1.default.error(res, 'Error', err);
+    });
+});
+authenticateRouter.post('/district', [
+    (0, express_validator_1.body)('name').notEmpty().withMessage('Name is required'),
+], (req, res) => {
+    const errors = (0, express_validator_1.validationResult)(req).formatWith(HelperFunction_1.default.validationErrorFormat);
+    if (!errors.isEmpty()) {
+        return apiResponse_1.default.validationErrorWithData(res, 'Validation Error', errors.array());
+    }
+    let { name } = req.body;
+    const districtQuery = 'INSERT INTO `districts`(`name`, `created_u_a`, `created_ip`, `created_by`, `created_at`, `updated_at`) VALUES (?,?,?,?,?,?)';
+    const districtParams = [name, req.headers['user-agent'], req.ip, 1, HelperFunction_1.default.getDateTime(0), HelperFunction_1.default.getDateTime(0)];
+    Model_1.default.queryExecute(districtQuery, districtParams).then((result) => {
+        return apiResponse_1.default.success(res, 'District Create successfully', []);
+    }).catch((err) => {
+        return apiResponse_1.default.error(res, err.message, []);
+    });
+});
 exports.default = authenticateRouter;

@@ -275,6 +275,35 @@ authenticateRouter.post('/feature',[
     });
 });
 
+// district
+authenticateRouter.get('/district', (req, res) => {
+    const districtQuery = 'select * from districts order by id desc';
+    Model.get(districtQuery).then((result: any) => {
+        apiResponse.success(res, 'All District', result);
+    }).catch((err: any) => {
+        apiResponse.error(res, 'Error', err);
+    });
+});
+
+authenticateRouter.post('/district',[
+    body('name').notEmpty().withMessage('Name is required'),
+
+],(req: Request, res: Response)=>{
+    const errors = validationResult(req).formatWith(HelperFunction.validationErrorFormat);
+    if (!errors.isEmpty()) {
+        return apiResponse.validationErrorWithData(res, 'Validation Error', errors.array());
+    }
+    let {name} = req.body;
+    const districtQuery = 'INSERT INTO `districts`(`name`, `created_u_a`, `created_ip`, `created_by`, `created_at`, `updated_at`) VALUES (?,?,?,?,?,?)';
+    const districtParams = [name, req.headers['user-agent'], req.ip, 1, HelperFunction.getDateTime(0), HelperFunction.getDateTime(0)];
+
+    Model.queryExecute(districtQuery, districtParams).then((result: any) => {
+        return apiResponse.success(res, 'District Create successfully', []);
+    }).catch((err: any) => {
+        return apiResponse.error(res, err.message, []);
+    });
+});
+
 
 
 
