@@ -1,17 +1,12 @@
-import express, {  Request, Response, Router } from 'express';
+import {  Request, Response } from 'express';
 import {body, validationResult} from "express-validator";
 import HelperFunction from "../../../Helper/HelperFunction";
 import apiResponse from "../../../Helper/apiResponse";
 import Model from "../../../Helper/Model";
+import {guestRouter} from "./router";
 
 
-
-const router: Router = Router();
-router.use(express.urlencoded({ extended: true }));
-router.use(express.json());
-
-
-router.post('/register',[
+guestRouter.post('/register',[
     body('name')
         .isLength({ min: 3 })
         .withMessage('Name must be at least 3 characters long.'),
@@ -47,8 +42,7 @@ router.post('/register',[
         password = Model.passwordHash(password);
     let query = "INSERT INTO users (name, phone, password) VALUES (?, ?, ?)";
     let params = [name, phone, password];
-    let r = Model.queryExecute(query, params).then((result: any) => {
-
+    Model.queryExecute(query, params).then((result: any) => {
         console.log(result);
         return apiResponse.success(res, 'Registration is Successful', []);
     }).catch((err: any) => {
@@ -56,9 +50,7 @@ router.post('/register',[
     });
 });
 
-
-
-router.post('/login',[
+guestRouter.post('/login',[
     body('phone').isLength({ min: 11, max:11 }).withMessage('Phone number must be 11 digits.'),
 ], (req: Request, res: Response) => {
 
@@ -107,4 +99,4 @@ router.post('/login',[
 });
 
 
-export default router;
+export default guestRouter;

@@ -4,7 +4,7 @@ import multer from "multer";
 import apiResponse from "../../../Helper/apiResponse";
 import HelperFunction from "../../../Helper/HelperFunction";
 import Model from "../../../Helper/Model";
-import authenticateRouter from "./router";
+import {authenticateRouter} from "./router";
 
 
 authenticateRouter.get('/user', (req, res) => {
