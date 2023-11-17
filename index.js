@@ -17,37 +17,19 @@ const apiResponse_1 = __importDefault(require("./application/Helper/apiResponse"
 const UserAgent_1 = __importDefault(require("./application/Helper/UserAgent"));
 const api_1 = __importDefault(require("./application/Router/api/v1/api"));
 const authenticatedRouter_1 = __importDefault(require("./application/Router/api/v1/authenticatedRouter"));
+const HelperFunction_1 = __importDefault(require("./application/Helper/HelperFunction"));
 const app = (0, express_1.default)();
 const port = 4000;
-const ipv4AndIpv6 = (ip) => {
-    let ipv4Address = '';
-    let ipv6Address = '';
-    if (ip.includes(':')) {
-        // ip = ::ffff:103.121.216.59;
-        // need to get ::ffff: from the ip
-        if (ip.includes('.')) {
-            const lastIndex = ip.lastIndexOf(':');
-            ipv6Address = ip.slice(0, lastIndex + 1);
-        }
-        else {
-            ipv6Address = ip;
-        }
-    }
-    if (ip.includes('.')) {
-        ipv4Address = ip.split(':').pop();
-    }
-    return { ipv4Address: ipv4Address, ipv6Address: ipv6Address };
-};
 app.use(express_1.default.json());
 app.use('/public', express_1.default.static('public'));
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const ip = req.ips.length > 0 ? req.ips[0] : req.ip;
     const ua = yield new UserAgent_1.default().get(req);
-    apiResponse_1.default.success(res, 'Welcome to Track My Show API Server 👌', { ip: ipv4AndIpv6(req.ip), device: ua });
+    apiResponse_1.default.success(res, 'Welcome to Track My Show API Server 👌', { ip: HelperFunction_1.default.ipv4AndIpv6(req.ip), device: ua });
 }));
 app.use('/api/v1/auth', api_1.default);
 app.use('/api/v1', authenticatedRouter_1.default);
 app.use((req, res) => {
+    console.info(req);
     apiResponse_1.default.notFound(res, 'URL Not Found', []);
 });
 app.listen(port, () => {

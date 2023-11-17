@@ -1,18 +1,14 @@
-import express, {  Request, Response,NextFunction, Router } from 'express';
-import {VerifyToken} from "../../../Middleware/VerifyToken";
-import {body, query, validationResult} from "express-validator";
+import express, {  Request, Response } from 'express';
+import {body, validationResult} from "express-validator";
 import multer from "multer";
 import apiResponse from "../../../Helper/apiResponse";
 import HelperFunction from "../../../Helper/HelperFunction";
 import Model from "../../../Helper/Model";
+import authenticateRouter from "./router";
 
-
-const authenticateRouter: Router = Router();
-authenticateRouter.use(VerifyToken);
-authenticateRouter.use(express.urlencoded({ extended: true }));
-authenticateRouter.use(express.json());
 
 authenticateRouter.get('/user', (req, res) => {
+    console.info(req);
     const allUserQuery = 'select * from users';
     Model.get(allUserQuery).then((result: any) => {
         const users = result.map((user: any) => {
@@ -24,7 +20,10 @@ authenticateRouter.get('/user', (req, res) => {
         apiResponse.error(res, 'Error', err);
     });
 });
+
+
 authenticateRouter.get('/organizer', (req, res) => {
+    console.info(req);
     const allUserQuery = 'select * from organizers';
     Model.get(allUserQuery).then((result: any) => {
 
@@ -41,9 +40,11 @@ authenticateRouter.get('/organizer', (req, res) => {
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
+        console.info(req,file);
         cb(null, 'public/organizer');
     },
     filename: function (req, file, cb) {
+        console.info(req);
         cb(null, Date.now() + '-' + file.originalname);
     }
 });
@@ -85,7 +86,7 @@ authenticateRouter.post('/organizer',
 
     let query = "INSERT INTO organizers (name, slug, description, cover, about, created_u_a, created_ip, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     let params = [name, slug, description, cover, about, req.headers['user-agent'], HelperFunction.getIpAddress(req), HelperFunction.getDateTime(0), HelperFunction.getDateTime(0)];
-    let r = Model.queryExecute(query, params).then((result: any) => {
+    Model.queryExecute(query, params).then((result: any) => {
 
             console.log(result);
             return apiResponse.success(res, 'Registration is Successful', []);
@@ -97,7 +98,8 @@ authenticateRouter.post('/organizer',
 );
 
 
-authenticateRouter.get('/event', (req, res) => {
+authenticateRouter.get('/event', (req: Request, res:Response) => {
+    console.info(req);
     const organizerEventQuery = 'select * from organizer_events order by id desc';
     Model.get(organizerEventQuery).then((result: any) => {
         result = result.map((event: any) => {
@@ -131,9 +133,11 @@ authenticateRouter.get('/event-by-organization/:id', (req, res) => {
 
 const eventStorage = multer.diskStorage({
     destination: function (req, file, cb) {
+        console.info(req,file);
         cb(null, 'public/event');
     },
     filename: function (req, file, cb) {
+        console.info(req);
         cb(null, Date.now() + '-' + file.originalname);
     }
 });
@@ -188,6 +192,7 @@ authenticateRouter.post('/event', eventImageUpload.single('cover'),[
 });
 
 authenticateRouter.get('/venue', (req, res) => {
+    console.info(req);
     const venueQuery = 'select * from venues order by id desc';
     Model.get(venueQuery).then((result: any) => {
         apiResponse.success(res, 'All Venue', result);
@@ -211,7 +216,7 @@ authenticateRouter.post('/venue',[
     const venueParams = [name, address, latitude, longitude, google_map_url, req.headers['user-agent'], req.ip, 1, HelperFunction.getDateTime(0), HelperFunction.getDateTime(0)];
 
     Model.queryExecute(venueQuery, venueParams).then((result: any) => {
-        return apiResponse.success(res, 'Venue Create successfully', []);
+        return apiResponse.success(res, 'Venue Create successfully', [result]);
     }).catch((err: any) => {
         return apiResponse.error(res, err.message, []);
     });
@@ -220,6 +225,7 @@ authenticateRouter.post('/venue',[
 
 
 authenticateRouter.get('/category', (req, res) => {
+    console.info(req);
     const categoryQuery = 'select * from categories order by id desc';
     Model.get(categoryQuery).then((result: any) => {
         apiResponse.success(res, 'All Category', result);
@@ -241,13 +247,14 @@ authenticateRouter.post('/category',[
     const categoryParams = [name, req.headers['user-agent'], req.ip, 1, HelperFunction.getDateTime(0), HelperFunction.getDateTime(0)];
 
     Model.queryExecute(categoryQuery, categoryParams).then((result: any) => {
-        return apiResponse.success(res, 'Category Create successfully', []);
+        return apiResponse.success(res, 'Category Create successfully', [result]);
     }).catch((err: any) => {
         return apiResponse.error(res, err.message, []);
     });
 });
 
 authenticateRouter.get('/feature', (req, res) => {
+    console.info(req);
     const featureQuery = 'select * from features order by id desc';
     Model.get(featureQuery).then((result: any) => {
         apiResponse.success(res, 'All Feature', result);
@@ -269,7 +276,7 @@ authenticateRouter.post('/feature',[
     const featureParams = [name, req.headers['user-agent'], req.ip, 1, HelperFunction.getDateTime(0), HelperFunction.getDateTime(0)];
 
     Model.queryExecute(featureQuery, featureParams).then((result: any) => {
-        return apiResponse.success(res, 'Feature Create successfully', []);
+        return apiResponse.success(res, 'Feature Create successfully', [result]);
     }).catch((err: any) => {
         return apiResponse.error(res, err.message, []);
     });
@@ -277,6 +284,7 @@ authenticateRouter.post('/feature',[
 
 // district
 authenticateRouter.get('/district', (req, res) => {
+    console.info(req);
     const districtQuery = 'select * from districts order by id desc';
     Model.get(districtQuery).then((result: any) => {
         apiResponse.success(res, 'All District', result);
@@ -298,7 +306,7 @@ authenticateRouter.post('/district',[
     const districtParams = [name, req.headers['user-agent'], req.ip, 1, HelperFunction.getDateTime(0), HelperFunction.getDateTime(0)];
 
     Model.queryExecute(districtQuery, districtParams).then((result: any) => {
-        return apiResponse.success(res, 'District Create successfully', []);
+        return apiResponse.success(res, 'District Create successfully', [result]);
     }).catch((err: any) => {
         return apiResponse.error(res, err.message, []);
     });

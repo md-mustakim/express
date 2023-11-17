@@ -47,6 +47,7 @@ authenticateRouter.use(VerifyToken_1.VerifyToken);
 authenticateRouter.use(express_1.default.urlencoded({ extended: true }));
 authenticateRouter.use(express_1.default.json());
 authenticateRouter.get('/user', (req, res) => {
+    console.info(req);
     const allUserQuery = 'select * from users';
     Model_1.default.get(allUserQuery).then((result) => {
         const users = result.map((user) => {
@@ -59,6 +60,7 @@ authenticateRouter.get('/user', (req, res) => {
     });
 });
 authenticateRouter.get('/organizer', (req, res) => {
+    console.info(req);
     const allUserQuery = 'select * from organizers';
     Model_1.default.get(allUserQuery).then((result) => {
         result = result.map((organizer) => {
@@ -72,9 +74,11 @@ authenticateRouter.get('/organizer', (req, res) => {
 });
 const storage = multer_1.default.diskStorage({
     destination: function (req, file, cb) {
+        console.info(req, file);
         cb(null, 'public/organizer');
     },
     filename: function (req, file, cb) {
+        console.info(req);
         cb(null, Date.now() + '-' + file.originalname);
     }
 });
@@ -109,7 +113,7 @@ authenticateRouter.post('/organizer', upload.single('cover'), [
     console.log(req.file);
     let query = "INSERT INTO organizers (name, slug, description, cover, about, created_u_a, created_ip, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     let params = [name, slug, description, cover, about, req.headers['user-agent'], HelperFunction_1.default.getIpAddress(req), HelperFunction_1.default.getDateTime(0), HelperFunction_1.default.getDateTime(0)];
-    let r = Model_1.default.queryExecute(query, params).then((result) => {
+    Model_1.default.queryExecute(query, params).then((result) => {
         console.log(result);
         return apiResponse_1.default.success(res, 'Registration is Successful', []);
     }).catch((err) => {
@@ -117,6 +121,7 @@ authenticateRouter.post('/organizer', upload.single('cover'), [
     });
 });
 authenticateRouter.get('/event', (req, res) => {
+    console.info(req);
     const organizerEventQuery = 'select * from organizer_events order by id desc';
     Model_1.default.get(organizerEventQuery).then((result) => {
         result = result.map((event) => {
@@ -143,9 +148,11 @@ authenticateRouter.get('/event-by-organization/:id', (req, res) => {
 });
 const eventStorage = multer_1.default.diskStorage({
     destination: function (req, file, cb) {
+        console.info(req, file);
         cb(null, 'public/event');
     },
     filename: function (req, file, cb) {
+        console.info(req);
         cb(null, Date.now() + '-' + file.originalname);
     }
 });
@@ -192,6 +199,7 @@ authenticateRouter.post('/event', eventImageUpload.single('cover'), [
     });
 });
 authenticateRouter.get('/venue', (req, res) => {
+    console.info(req);
     const venueQuery = 'select * from venues order by id desc';
     Model_1.default.get(venueQuery).then((result) => {
         apiResponse_1.default.success(res, 'All Venue', result);
@@ -211,12 +219,13 @@ authenticateRouter.post('/venue', [
     const venueQuery = 'INSERT INTO `venues`(`name`, `address`, `latitude`, `longitude`, `google_map_url`, `created_u_a`, `created_ip`, `created_by`, `created_at`, `updated_at`) VALUES (?,?,?,?,?,?,?,?,?,?)';
     const venueParams = [name, address, latitude, longitude, google_map_url, req.headers['user-agent'], req.ip, 1, HelperFunction_1.default.getDateTime(0), HelperFunction_1.default.getDateTime(0)];
     Model_1.default.queryExecute(venueQuery, venueParams).then((result) => {
-        return apiResponse_1.default.success(res, 'Venue Create successfully', []);
+        return apiResponse_1.default.success(res, 'Venue Create successfully', [result]);
     }).catch((err) => {
         return apiResponse_1.default.error(res, err.message, []);
     });
 });
 authenticateRouter.get('/category', (req, res) => {
+    console.info(req);
     const categoryQuery = 'select * from categories order by id desc';
     Model_1.default.get(categoryQuery).then((result) => {
         apiResponse_1.default.success(res, 'All Category', result);
@@ -235,12 +244,13 @@ authenticateRouter.post('/category', [
     const categoryQuery = 'INSERT INTO `categories`(`name`, `created_u_a`, `created_ip`, `created_by`, `created_at`, `updated_at`) VALUES (?,?,?,?,?,?)';
     const categoryParams = [name, req.headers['user-agent'], req.ip, 1, HelperFunction_1.default.getDateTime(0), HelperFunction_1.default.getDateTime(0)];
     Model_1.default.queryExecute(categoryQuery, categoryParams).then((result) => {
-        return apiResponse_1.default.success(res, 'Category Create successfully', []);
+        return apiResponse_1.default.success(res, 'Category Create successfully', [result]);
     }).catch((err) => {
         return apiResponse_1.default.error(res, err.message, []);
     });
 });
 authenticateRouter.get('/feature', (req, res) => {
+    console.info(req);
     const featureQuery = 'select * from features order by id desc';
     Model_1.default.get(featureQuery).then((result) => {
         apiResponse_1.default.success(res, 'All Feature', result);
@@ -259,13 +269,14 @@ authenticateRouter.post('/feature', [
     const featureQuery = 'INSERT INTO `features`(`name`, `created_u_a`, `created_ip`, `created_by`, `created_at`, `updated_at`) VALUES (?,?,?,?,?,?)';
     const featureParams = [name, req.headers['user-agent'], req.ip, 1, HelperFunction_1.default.getDateTime(0), HelperFunction_1.default.getDateTime(0)];
     Model_1.default.queryExecute(featureQuery, featureParams).then((result) => {
-        return apiResponse_1.default.success(res, 'Feature Create successfully', []);
+        return apiResponse_1.default.success(res, 'Feature Create successfully', [result]);
     }).catch((err) => {
         return apiResponse_1.default.error(res, err.message, []);
     });
 });
 // district
 authenticateRouter.get('/district', (req, res) => {
+    console.info(req);
     const districtQuery = 'select * from districts order by id desc';
     Model_1.default.get(districtQuery).then((result) => {
         apiResponse_1.default.success(res, 'All District', result);
@@ -284,7 +295,7 @@ authenticateRouter.post('/district', [
     const districtQuery = 'INSERT INTO `districts`(`name`, `created_u_a`, `created_ip`, `created_by`, `created_at`, `updated_at`) VALUES (?,?,?,?,?,?)';
     const districtParams = [name, req.headers['user-agent'], req.ip, 1, HelperFunction_1.default.getDateTime(0), HelperFunction_1.default.getDateTime(0)];
     Model_1.default.queryExecute(districtQuery, districtParams).then((result) => {
-        return apiResponse_1.default.success(res, 'District Create successfully', []);
+        return apiResponse_1.default.success(res, 'District Create successfully', [result]);
     }).catch((err) => {
         return apiResponse_1.default.error(res, err.message, []);
     });

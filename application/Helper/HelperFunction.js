@@ -37,5 +37,22 @@ class HelperFunction {
         // Return Invalid
         return false;
     }
+    static ipv4AndIpv6(ip) {
+        let ipv4Address = '';
+        let ipv6Address = '';
+        if (ip.includes(':')) {
+            if (ip.includes('.')) {
+                const lastIndex = ip.lastIndexOf(':');
+                ipv6Address = ip.slice(0, lastIndex + 1);
+            }
+            else {
+                ipv6Address = ip;
+            }
+        }
+        if (ip.includes('.')) {
+            ipv4Address = ip.split(':').pop();
+        }
+        return { ipv4Address: ipv4Address, ipv6Address: ipv6Address };
+    }
 }
 exports.default = HelperFunction;
