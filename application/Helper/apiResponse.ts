@@ -8,6 +8,7 @@ const apiResponse = {
         res.setHeader('Content-Type', 'application/json');
         res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
         res.setHeader('Expires', '0');
+        res.setHeader('Access-Control-Allow-Origin', '*');
         return res.status(statusCode).json({
             status,
             message,
