@@ -1,27 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -35,18 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importStar(require("express"));
-const VerifyToken_1 = require("../../../Middleware/VerifyToken");
+const express_1 = __importDefault(require("express"));
 const express_validator_1 = require("express-validator");
 const multer_1 = __importDefault(require("multer"));
 const apiResponse_1 = __importDefault(require("../../../Helper/apiResponse"));
 const HelperFunction_1 = __importDefault(require("../../../Helper/HelperFunction"));
 const Model_1 = __importDefault(require("../../../Helper/Model"));
-const authenticateRouter = (0, express_1.Router)();
-authenticateRouter.use(VerifyToken_1.VerifyToken);
-authenticateRouter.use(express_1.default.urlencoded({ extended: true }));
-authenticateRouter.use(express_1.default.json());
-authenticateRouter.get('/user', (req, res) => {
+const router_1 = require("./router");
+router_1.authenticateRouter.get('/user', (req, res) => {
     console.info(req);
     const allUserQuery = 'select * from users';
     Model_1.default.get(allUserQuery).then((result) => {
@@ -59,7 +32,7 @@ authenticateRouter.get('/user', (req, res) => {
         apiResponse_1.default.error(res, 'Error', err);
     });
 });
-authenticateRouter.get('/organizer', (req, res) => {
+router_1.authenticateRouter.get('/organizer', (req, res) => {
     console.info(req);
     const allUserQuery = 'select * from organizers';
     Model_1.default.get(allUserQuery).then((result) => {
@@ -83,9 +56,9 @@ const storage = multer_1.default.diskStorage({
     }
 });
 const upload = (0, multer_1.default)({ storage: storage });
-authenticateRouter.use(express_1.default.static('public'));
-authenticateRouter.use(express_1.default.static('event'));
-authenticateRouter.post('/organizer', upload.single('cover'), [
+router_1.authenticateRouter.use(express_1.default.static('public'));
+router_1.authenticateRouter.use(express_1.default.static('event'));
+router_1.authenticateRouter.post('/organizer', upload.single('cover'), [
     (0, express_validator_1.body)('name').notEmpty().withMessage('Name is required'),
     (0, express_validator_1.body)('slug').custom((value) => __awaiter(void 0, void 0, void 0, function* () {
         let query = "SELECT * FROM organizers WHERE slug = ?";
@@ -120,7 +93,7 @@ authenticateRouter.post('/organizer', upload.single('cover'), [
         return apiResponse_1.default.error(res, err.message, []);
     });
 });
-authenticateRouter.get('/event', (req, res) => {
+router_1.authenticateRouter.get('/event', (req, res) => {
     console.info(req);
     const organizerEventQuery = 'select * from organizer_events order by id desc';
     Model_1.default.get(organizerEventQuery).then((result) => {
@@ -133,7 +106,7 @@ authenticateRouter.get('/event', (req, res) => {
         apiResponse_1.default.error(res, 'Error', err);
     });
 });
-authenticateRouter.get('/event-by-organization/:id', (req, res) => {
+router_1.authenticateRouter.get('/event-by-organization/:id', (req, res) => {
     const organizerEventQuery = 'select * from organizer_events where organizer_id = ?';
     const params = [req.params.id];
     Model_1.default.get(organizerEventQuery, params).then((result) => {
@@ -157,7 +130,7 @@ const eventStorage = multer_1.default.diskStorage({
     }
 });
 const eventImageUpload = (0, multer_1.default)({ storage: eventStorage });
-authenticateRouter.post('/event', eventImageUpload.single('cover'), [
+router_1.authenticateRouter.post('/event', eventImageUpload.single('cover'), [
     (0, express_validator_1.body)('name').notEmpty().withMessage('Name is required'),
     (0, express_validator_1.body)('slug').custom((value) => __awaiter(void 0, void 0, void 0, function* () {
         let query = "SELECT id,slug FROM organizer_events WHERE slug = ?";
@@ -198,7 +171,7 @@ authenticateRouter.post('/event', eventImageUpload.single('cover'), [
         return apiResponse_1.default.error(res, err.message, []);
     });
 });
-authenticateRouter.get('/venue', (req, res) => {
+router_1.authenticateRouter.get('/venue', (req, res) => {
     console.info(req);
     const venueQuery = 'select * from venues order by id desc';
     Model_1.default.get(venueQuery).then((result) => {
@@ -207,7 +180,7 @@ authenticateRouter.get('/venue', (req, res) => {
         apiResponse_1.default.error(res, 'Error', err);
     });
 });
-authenticateRouter.post('/venue', [
+router_1.authenticateRouter.post('/venue', [
     (0, express_validator_1.body)('name').notEmpty().withMessage('Name is required'),
     (0, express_validator_1.body)('address').notEmpty().withMessage('Address is required'),
 ], (req, res) => {
@@ -224,7 +197,7 @@ authenticateRouter.post('/venue', [
         return apiResponse_1.default.error(res, err.message, []);
     });
 });
-authenticateRouter.get('/category', (req, res) => {
+router_1.authenticateRouter.get('/category', (req, res) => {
     console.info(req);
     const categoryQuery = 'select * from categories order by id desc';
     Model_1.default.get(categoryQuery).then((result) => {
@@ -233,7 +206,7 @@ authenticateRouter.get('/category', (req, res) => {
         apiResponse_1.default.error(res, 'Error', err);
     });
 });
-authenticateRouter.post('/category', [
+router_1.authenticateRouter.post('/category', [
     (0, express_validator_1.body)('name').notEmpty().withMessage('Name is required'),
 ], (req, res) => {
     const errors = (0, express_validator_1.validationResult)(req).formatWith(HelperFunction_1.default.validationErrorFormat);
@@ -249,7 +222,7 @@ authenticateRouter.post('/category', [
         return apiResponse_1.default.error(res, err.message, []);
     });
 });
-authenticateRouter.get('/feature', (req, res) => {
+router_1.authenticateRouter.get('/feature', (req, res) => {
     console.info(req);
     const featureQuery = 'select * from features order by id desc';
     Model_1.default.get(featureQuery).then((result) => {
@@ -258,7 +231,7 @@ authenticateRouter.get('/feature', (req, res) => {
         apiResponse_1.default.error(res, 'Error', err);
     });
 });
-authenticateRouter.post('/feature', [
+router_1.authenticateRouter.post('/feature', [
     (0, express_validator_1.body)('name').notEmpty().withMessage('Name is required'),
 ], (req, res) => {
     const errors = (0, express_validator_1.validationResult)(req).formatWith(HelperFunction_1.default.validationErrorFormat);
@@ -275,7 +248,7 @@ authenticateRouter.post('/feature', [
     });
 });
 // district
-authenticateRouter.get('/district', (req, res) => {
+router_1.authenticateRouter.get('/district', (req, res) => {
     console.info(req);
     const districtQuery = 'select * from districts order by id desc';
     Model_1.default.get(districtQuery).then((result) => {
@@ -284,7 +257,7 @@ authenticateRouter.get('/district', (req, res) => {
         apiResponse_1.default.error(res, 'Error', err);
     });
 });
-authenticateRouter.post('/district', [
+router_1.authenticateRouter.post('/district', [
     (0, express_validator_1.body)('name').notEmpty().withMessage('Name is required'),
 ], (req, res) => {
     const errors = (0, express_validator_1.validationResult)(req).formatWith(HelperFunction_1.default.validationErrorFormat);
@@ -300,4 +273,4 @@ authenticateRouter.post('/district', [
         return apiResponse_1.default.error(res, err.message, []);
     });
 });
-exports.default = authenticateRouter;
+exports.default = router_1.authenticateRouter;

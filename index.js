@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const apiResponse_1 = __importDefault(require("./application/Helper/apiResponse"));
 const UserAgent_1 = __importDefault(require("./application/Helper/UserAgent"));
-const api_1 = __importDefault(require("./application/Router/api/v1/api"));
+const guestRouter_1 = __importDefault(require("./application/Router/api/v1/guestRouter"));
 const authenticatedRouter_1 = __importDefault(require("./application/Router/api/v1/authenticatedRouter"));
 const HelperFunction_1 = __importDefault(require("./application/Helper/HelperFunction"));
 const app = (0, express_1.default)();
@@ -26,7 +26,7 @@ app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const ua = yield new UserAgent_1.default().get(req);
     apiResponse_1.default.success(res, 'Welcome to Track My Show API Server 👌', { ip: HelperFunction_1.default.ipv4AndIpv6(req.ip), device: ua });
 }));
-app.use('/api/v1/auth', api_1.default);
+app.use('/api/v1/auth', guestRouter_1.default);
 app.use('/api/v1', authenticatedRouter_1.default);
 app.use((req, res) => {
     console.info(req);

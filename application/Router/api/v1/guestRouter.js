@@ -1,27 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -35,15 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importStar(require("express"));
 const express_validator_1 = require("express-validator");
 const HelperFunction_1 = __importDefault(require("../../../Helper/HelperFunction"));
 const apiResponse_1 = __importDefault(require("../../../Helper/apiResponse"));
 const Model_1 = __importDefault(require("../../../Helper/Model"));
-const router = (0, express_1.Router)();
-router.use(express_1.default.urlencoded({ extended: true }));
-router.use(express_1.default.json());
-router.post('/register', [
+const router_1 = require("./router");
+router_1.guestRouter.post('/register', [
     (0, express_validator_1.body)('name')
         .isLength({ min: 3 })
         .withMessage('Name must be at least 3 characters long.'),
@@ -75,14 +49,14 @@ router.post('/register', [
     password = Model_1.default.passwordHash(password);
     let query = "INSERT INTO users (name, phone, password) VALUES (?, ?, ?)";
     let params = [name, phone, password];
-    let r = Model_1.default.queryExecute(query, params).then((result) => {
+    Model_1.default.queryExecute(query, params).then((result) => {
         console.log(result);
         return apiResponse_1.default.success(res, 'Registration is Successful', []);
     }).catch((err) => {
         return apiResponse_1.default.error(res, err.message, []);
     });
 });
-router.post('/login', [
+router_1.guestRouter.post('/login', [
     (0, express_validator_1.body)('phone').isLength({ min: 11, max: 11 }).withMessage('Phone number must be 11 digits.'),
 ], (req, res) => {
     const errors = (0, express_validator_1.validationResult)(req).formatWith(HelperFunction_1.default.validationErrorFormat);
@@ -125,4 +99,4 @@ router.post('/login', [
         return apiResponse_1.default.error(res, err.message, []);
     });
 });
-exports.default = router;
+exports.default = router_1.guestRouter;
