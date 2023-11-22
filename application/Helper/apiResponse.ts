@@ -17,6 +17,7 @@ const apiResponse = {
         res.setHeader('Access-Control-Max-Age', '86400');
 
 
+
         return res.status(statusCode).json({
             status,
             message,

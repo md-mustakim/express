@@ -18,8 +18,11 @@ const UserAgent_1 = __importDefault(require("./application/Helper/UserAgent"));
 const guestRouter_1 = __importDefault(require("./application/Router/api/v1/guestRouter"));
 const authenticatedRouter_1 = __importDefault(require("./application/Router/api/v1/authenticatedRouter"));
 const HelperFunction_1 = __importDefault(require("./application/Helper/HelperFunction"));
+const cors_1 = __importDefault(require("cors"));
 const app = (0, express_1.default)();
 const port = 4000;
+// for cross-origin
+app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use('/public', express_1.default.static('public'));
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {

@@ -6,10 +6,14 @@ import guestRouter from "./application/Router/api/v1/guestRouter";
 import authenticateRouter from "./application/Router/api/v1/authenticatedRouter";
 import HelperFunction from "./application/Helper/HelperFunction";
 
+import cors from "cors";
+
 const app: Express = express();
 const port = 4000;
 
+// for cross-origin
 
+app.use(cors());
 
 app.use(express.json());
 
