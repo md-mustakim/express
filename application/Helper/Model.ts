@@ -13,12 +13,8 @@ const Model =  {
             return await new Promise((resolve, reject) => {
                 connection.query(query, params, (err: any, result: any) => {
                     if (err) {
-                        // close the connection
-                        connection.release();
                         reject(err);
                     } else {
-                        // close the connection
-                        connection.release();
                         resolve(result);
                     }
                 });
@@ -26,6 +22,12 @@ const Model =  {
 
         } catch (err) {
             return Promise.reject(err);
+        } finally {
+            if(Connection){
+                await Connection.closeConnection();
+
+            }
+
         }
 
     },
