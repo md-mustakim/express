@@ -106,6 +106,16 @@ router_1.authenticateRouter.get('/event', (req, res) => {
         apiResponse_1.default.error(res, 'Error', err);
     });
 });
+router_1.authenticateRouter.get('/event/:id', (req, res) => {
+    const organizerEventQuery = 'select * from organizer_events where id = ?';
+    const params = [req.params.id];
+    Model_1.default.first(organizerEventQuery, params).then((result) => {
+        result.cover = HelperFunction_1.default.env('APP_URL') + '/public/event/' + result.cover;
+        apiResponse_1.default.success(res, 'Events', result);
+    }).catch((err) => {
+        apiResponse_1.default.error(res, 'Error', err);
+    });
+});
 router_1.authenticateRouter.get('/event-by-organization/:id', (req, res) => {
     const organizerEventQuery = 'select * from organizer_events where organizer_id = ?';
     const params = [req.params.id];

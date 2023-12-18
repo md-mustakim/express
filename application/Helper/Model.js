@@ -47,9 +47,13 @@ const Model = {
                 return yield new Promise((resolve, reject) => {
                     connection.query(query, params, (err, result) => {
                         if (err) {
+                            // close the connection
+                            connection.release();
                             reject(err);
                         }
                         else {
+                            // close the connection
+                            connection.release();
                             resolve(result);
                         }
                     });
