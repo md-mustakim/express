@@ -38,6 +38,20 @@ authenticateRouter.get('/organizer', (req, res) => {
     });
 });
 
+authenticateRouter.get('/organizer/:id', (req, res) => {
+
+    const params = [req.params.id];
+    const allUserQuery = 'select * from organizers where id = ?';
+    Model.first(allUserQuery, params).then((result: any) => {
+
+        result.cover = HelperFunction.env('APP_URL') + '/public/organizer/' + result.cover;
+
+        apiResponse.success(res, 'Organizer', result);
+    }).catch((err: any) => {
+        apiResponse.error(res, 'Error', err);
+    });
+});
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         console.info(req,file);

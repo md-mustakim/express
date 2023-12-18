@@ -45,6 +45,16 @@ router_1.authenticateRouter.get('/organizer', (req, res) => {
         apiResponse_1.default.error(res, 'Error', err);
     });
 });
+router_1.authenticateRouter.get('/organizer/:id', (req, res) => {
+    const params = [req.params.id];
+    const allUserQuery = 'select * from organizers where id = ?';
+    Model_1.default.first(allUserQuery, params).then((result) => {
+        result.cover = HelperFunction_1.default.env('APP_URL') + '/public/organizer/' + result.cover;
+        apiResponse_1.default.success(res, 'Organizer', result);
+    }).catch((err) => {
+        apiResponse_1.default.error(res, 'Error', err);
+    });
+});
 const storage = multer_1.default.diskStorage({
     destination: function (req, file, cb) {
         console.info(req, file);
