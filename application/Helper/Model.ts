@@ -8,11 +8,11 @@ const Model =  {
 
     async queryExecute(query: string, params: any = []) {
 
-        const connection = await Connection.getConnection();
+        const connect = await Connection.getConnection();
         try {
             
             return await new Promise((resolve, reject) => {
-                connection.query(query, params, (err: any, result: any) => {
+                connect.query(query, params, (err: any, result: any) => {
                     if (err) {
                         reject(err);
                     } else {
@@ -25,7 +25,7 @@ const Model =  {
             return Promise.reject(err);
         } finally {
             if(Connection){
-                connection.release();                
+                await Connection.closeConnection();                
             }
 
         }

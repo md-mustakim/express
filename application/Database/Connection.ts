@@ -14,14 +14,19 @@ export default class Connection {
     }
     public static async getConnection() {
         if (this.connection) {
+            console.log('get connection from pool');
             return this.connection;
+        }else{
+
+            console.log('create connection');
+            return mysql.createPool(this.databaseConfig());
         }
-       return mysql.createPool(this.databaseConfig());
     }
 
     public static async closeConnection() {
         if (this.connection) {
-            this.connection.end();
+            console.log('close connection');
+            await this.connection.end();
         }
     }
 
