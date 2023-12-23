@@ -83,7 +83,7 @@ guestRouter.post('/login',[
                 return apiResponse.success(res, 'Login is Successful', {
                     accessToken: {
                         token: accessToken,
-                        expiresInSec: 3600
+                        expiresInSec: 3600 * 24
                     },
                     user: result[0]
                 });
