@@ -7,12 +7,16 @@ import HelperFunction from "./HelperFunction";
 const Model =  {
 
     async queryExecute(query: string, params: any = []) {
+        const connectionState = await Connection.getConnection();
 
-        const connect = await Connection.getConnection();
         try {
             
-            return await new Promise((resolve, reject) => {
-                connect.query(query, params, (err: any, result: any) => {
+            // create connection 
+            
+
+            
+            let result = await new Promise((resolve, reject) => {
+                connectionState.query(query, params, (err: any, result: any) => {
                     if (err) {
                         reject(err);
                     } else {
@@ -21,12 +25,15 @@ const Model =  {
                 });
             });
 
+            connectionState.end();
+            return result;
+
         } catch (err) {
             return Promise.reject(err);
         } finally {
-            if(Connection){
-                await Connection.closeConnection();                
-            }
+            
+                // await Connection.closeConnection();                
+            
 
         }
 

@@ -37,13 +37,13 @@ guestRouter.post('/register',[
         return apiResponse.validationErrorWithData(res, 'Validation Error', errors.array());
     }
 
-    let body = req.body;
-    let {name, phone, password} = body;
+    
+    let {name, phone, password} = req.body;
         password = Model.passwordHash(password);
     let query = "INSERT INTO users (name, phone, password) VALUES (?, ?, ?)";
     let params = [name, phone, password];
     Model.queryExecute(query, params).then((result: any) => {
-        console.log(result);
+        
         return apiResponse.success(res, 'Registration is Successful', []);
     }).catch((err: any) => {
         return apiResponse.error(res, err.message, []);
@@ -73,7 +73,7 @@ guestRouter.post('/login',[
                 let params = ['access_token', accessToken, HelperFunction.getDateTime(3600), result[0].id, req.ip, req.headers['user-agent']];
 
                 Model.queryExecute(query, params).then(r => {
-                    console.log(r);
+                    // console.log(r);
                 });
 
                 let user = result[0];

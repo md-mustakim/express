@@ -8,7 +8,7 @@ import {authenticateRouter} from "./router";
 
 
 authenticateRouter.get('/user', (req, res) => {
-    console.info(req);
+    
     const allUserQuery = 'select * from users';
     Model.get(allUserQuery).then((result: any) => {
         const users = result.map((user: any) => {
@@ -23,7 +23,7 @@ authenticateRouter.get('/user', (req, res) => {
 
 
 authenticateRouter.get('/organizer', (req, res) => {
-    console.info(req);
+    
     const allUserQuery = 'select * from organizers';
     Model.get(allUserQuery).then((result: any) => {
 
@@ -54,11 +54,11 @@ authenticateRouter.get('/organizer/:id', (req, res) => {
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        console.info(req,file);
+        
         cb(null, 'public/organizer');
     },
     filename: function (req, file, cb) {
-        console.info(req);
+        
         cb(null, Date.now() + '-' + file.originalname);
     }
 });
@@ -95,14 +95,14 @@ authenticateRouter.post('/organizer',
     let body = req.body;
     let {name, slug, description, about} = body;
     let cover = req.file.filename;
-    console.log(req.file);
+    
 
 
     let query = "INSERT INTO organizers (name, slug, description, cover, about, created_u_a, created_ip, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     let params = [name, slug, description, cover, about, req.headers['user-agent'], HelperFunction.getIpAddress(req), HelperFunction.getDateTime(0), HelperFunction.getDateTime(0)];
     Model.queryExecute(query, params).then((result: any) => {
 
-            console.log(result);
+            
             return apiResponse.success(res, 'Registration is Successful', []);
     }).catch((err: any) => {
         return apiResponse.error(res, err.message, []);
@@ -113,7 +113,7 @@ authenticateRouter.post('/organizer',
 
 
 authenticateRouter.get('/event', (req: Request, res:Response) => {
-    console.info(req);
+    
     const organizerEventQuery = 'select * from organizer_events order by id desc';
     Model.get(organizerEventQuery).then((result: any) => {
         result = result.map((event: any) => {
@@ -158,11 +158,11 @@ authenticateRouter.get('/event-by-organization/:id', (req, res) => {
 
 const eventStorage = multer.diskStorage({
     destination: function (req, file, cb) {
-        console.info(req,file);
+        
         cb(null, 'public/event');
     },
     filename: function (req, file, cb) {
-        console.info(req);
+        
         cb(null, Date.now() + '-' + file.originalname);
     }
 });
@@ -204,12 +204,12 @@ authenticateRouter.post('/event', eventImageUpload.single('cover'),[
     let body = req.body;
     let {name, slug, description, organizer_id, scheduled_at, category_id, ticket_price, about, story, venue_id, features_id} = body;
     let cover = req.file.filename;
-    console.log(req.file);
+    
     const organizerEventQuery = 'INSERT INTO `organizer_events`(`name`, `slug`, `description`, `category_id`, `cover`, `scheduled_at`, `ticket_price`, `about`, `story`, `venue_id`, `organizer_id`, `features_id`, `created_by`, `u_a`, `ip`, `created_at`, `updated_at`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
     const organizerEventParams = [name, slug, description, category_id, cover, scheduled_at, ticket_price, about, story, venue_id, organizer_id, features_id,1, req.headers['user-agent'], req.ip, HelperFunction.getDateTime(0), HelperFunction.getDateTime(0)];
 
     Model.queryExecute(organizerEventQuery, organizerEventParams).then((result: any) => {
-        console.log(result);
+        
         return apiResponse.success(res, 'Event Create successfully', []);
     }).catch((err: any) => {
         return apiResponse.error(res, err.message, []);
@@ -217,7 +217,7 @@ authenticateRouter.post('/event', eventImageUpload.single('cover'),[
 });
 
 authenticateRouter.get('/venue', (req, res) => {
-    console.info(req);
+    
     const venueQuery = 'select * from venues order by id desc';
     Model.get(venueQuery).then((result: any) => {
         apiResponse.success(res, 'All Venue', result);
@@ -250,7 +250,7 @@ authenticateRouter.post('/venue',[
 
 
 authenticateRouter.get('/category', (req, res) => {
-    console.info(req);
+    
     const categoryQuery = 'select * from categories order by id desc';
     Model.get(categoryQuery).then((result: any) => {
         apiResponse.success(res, 'All Category', result);
@@ -279,7 +279,7 @@ authenticateRouter.post('/category',[
 });
 
 authenticateRouter.get('/feature', (req, res) => {
-    console.info(req);
+    
     const featureQuery = 'select * from features order by id desc';
     Model.get(featureQuery).then((result: any) => {
         apiResponse.success(res, 'All Feature', result);
@@ -309,7 +309,7 @@ authenticateRouter.post('/feature',[
 
 // district
 authenticateRouter.get('/district', (req, res) => {
-    console.info(req);
+    
     const districtQuery = 'select * from districts order by id desc';
     Model.get(districtQuery).then((result: any) => {
         apiResponse.success(res, 'All District', result);

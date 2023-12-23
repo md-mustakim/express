@@ -7,7 +7,7 @@ const UserController = {
                 if (err) {
                     console.log(err);
                 }
-                console.log(rows);
+                
                 res.setHeader('Content-Type', 'application/json');
                 res.json(rows);
 

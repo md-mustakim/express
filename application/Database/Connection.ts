@@ -2,7 +2,9 @@ import mysql from 'mysql';
 import configDotenv from "dotenv";
 
 export default class Connection {
+
     private static connection: any;
+
     private static databaseConfig()  {
         configDotenv.config();
         return {
@@ -12,22 +14,27 @@ export default class Connection {
             database: process.env.DB_NAME,
         }
     }
-    public static async getConnection() {
-        if (this.connection) {
-            console.log('get connection from pool');
-            return this.connection;
-        }else{
 
-            console.log('create connection');
-            return mysql.createPool(this.databaseConfig());
+
+    public static async getConnection() {
+        
+        
+        // check connection is already created
+        if(this.connection && this.connection.state === 'connected'){            
+            return this.connection;
+        }else{            
+            let connection =  mysql.createConnection(this.databaseConfig());
+            this.connection = connection;            
+            return this.connection;
         }
     }
 
     public static async closeConnection() {
-        if (this.connection) {
-            console.log('close connection');
+        if (this.connection && this.connection.state === 'connected') {            
             await this.connection.end();
         }
     }
+
+
 
 }

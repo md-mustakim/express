@@ -3,10 +3,14 @@ import express, { Express, Request, Response } from 'express';
 import apiResponse from "./application/Helper/apiResponse";
 import UserAgent from "./application/Helper/UserAgent";
 import guestRouter from "./application/Router/api/v1/guestRouter";
+
 import authenticateRouter from "./application/Router/api/v1/authenticatedRouter";
+
+
 import HelperFunction from "./application/Helper/HelperFunction";
 
 import cors from "cors";
+import organizerRouter from './application/Router/api/v1/organizerRouter';
 
 const app: Express = express();
 const port = 4000;
@@ -24,10 +28,13 @@ app.get('/', async (req: Request, res: Response) => {
 });
 
 app.use('/api/v1/auth', guestRouter);
-app.use('/api/v1', authenticateRouter);
 
-app.use((req: Request, res: Response) => {
-    console.info(req);
+app.use('/api/v1', authenticateRouter);
+app.use('/api/v1/organizer', organizerRouter);
+
+
+
+app.use((req: Request, res: Response) => {    
     apiResponse.notFound(res,  'URL Not Found', []);
 });
 
