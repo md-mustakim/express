@@ -20,6 +20,7 @@ const port = 4000;
 app.use(cors());
 
 app.use(express.json());
+app.disable('x-powered-by');
 
 app.use('/public', express.static('public'));
 app.get('/', async (req: Request, res: Response) => {
@@ -34,7 +35,7 @@ app.use('/api/v1/organizer', organizerRouter);
 
 
 
-app.use((req: Request, res: Response) => {    
+app.use((_req: Request, res: Response) => {
     apiResponse.notFound(res,  'URL Not Found', []);
 });
 
