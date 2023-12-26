@@ -111,8 +111,6 @@ organizerRouter.post('/',
 organizerRouter.post('/update/:id', multer().none(),
   (_req: Request, res: Response) => {
 
-
-
     let checkIdQuery = "SELECT * FROM organizers WHERE id = ?";
     let checkIdParams = [_req.params.id];
 
@@ -128,8 +126,6 @@ organizerRouter.post('/update/:id', multer().none(),
             Model.queryExecute(query, params).then((result: any) => {
 
                 if (result.affectedRows > 0) {
-
-
                     let updatedQuery = "SELECT * FROM organizers WHERE id = ?";
                     let updatedParams = [_req.params.id];
                     Model.first(updatedQuery, updatedParams).then((result: any) => {
@@ -139,26 +135,61 @@ organizerRouter.post('/update/:id', multer().none(),
                         return apiResponse.error(res, err.message, []);
                     });
 
-
-
                 } else {
                     return apiResponse.error(res, 'Error', []);
                 }
 
-
-
             }).catch((err: any) => {
                 return apiResponse.error(res, err.message, []);
-
             });
 
         }
      }).catch((err: any) => {
         return apiResponse.error(res, err.message, []);
      });
-
-
     }
 );
+
+organizerRouter.post('/status-update/:id', multer().none(),
+    (_req: Request, res: Response) => {
+
+        let checkIdQuery = "SELECT * FROM organizers WHERE id = ?";
+        let checkIdParams = [_req.params.id];
+
+         Model.get(checkIdQuery, checkIdParams).then((result: any) => {
+            if (result.length == 0) {
+                return apiResponse.notFound(res, 'Organizer not found', []);
+            } else {
+
+                let {status} = _req.body;
+
+                let query = "UPDATE organizers SET status = ?, updated_at = ? WHERE id = ?";
+                let params = [status, HelperFunction.getDateTime(0), _req.params.id];
+                Model.queryExecute(query, params).then((result: any) => {
+
+                    if (result.affectedRows > 0) {
+                        let updatedQuery = "SELECT * FROM organizers WHERE id = ?";
+                        let updatedParams = [_req.params.id];
+                        Model.first(updatedQuery, updatedParams).then((result: any) => {
+                            result.cover = HelperFunction.env('APP_URL') + '/public/organizer/' + result.cover;
+                            return apiResponse.success(res, 'Updated Successfully', result);
+                        }).catch((err: any) => {
+                            return apiResponse.error(res, err.message, []);
+                        });
+
+                    } else {
+                        return apiResponse.error(res, 'Error', []);
+                    }
+
+                }).catch((err: any) => {
+                    return apiResponse.error(res, err.message, []);
+                });
+
+            }
+         }).catch((err: any) => {
+            return apiResponse.error(res, err.message, []);
+         });
+        }
+    );
 
 export default organizerRouter;
