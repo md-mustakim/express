@@ -44,7 +44,7 @@ userRouter.post('/update/:id', multer().none(),
 
      Model.get('SELECT * FROM users WHERE id = ?', checkIdParams).then((result: any) => {
         if (result.length == 0) {
-            return apiResponse.notFound(res, 'Organizer not found', []);
+            return apiResponse.notFound(res, 'User not found', []);
         } else {
 
             let {name, description, about} = _req.body;
@@ -85,20 +85,21 @@ userRouter.post('/status-update/:id', multer().none(),
         let checkIdQuery = "SELECT * FROM users WHERE id = ?";
         let checkIdParams = [_req.params.id];
 
-         Model.get(checkIdQuery, checkIdParams).then((result: any) => {
-            if (result.length == 0) {
+         Model.first(checkIdQuery, checkIdParams).then((result: any) => {
+            if (result === null) {
                 return apiResponse.notFound(res, 'User not found', []);
             } else {
-                let {status} = _req.body;
+                let oldStatus = result.status;
+                let newStatus: number = oldStatus == 1 ? 0 : 1;
                 let query = "UPDATE users SET status = ?, updated_at = ? WHERE id = ?";
-                let params = [status, HelperFunction.getDateTime(0), _req.params.id];
+                let params = [newStatus, HelperFunction.getDateTime(0), _req.params.id];
                 Model.queryExecute(query, params).then((result: any) => {
 
                     if (result.affectedRows > 0) {
                         let updatedQuery = "SELECT * FROM users WHERE id = ?";
                         let updatedParams = [_req.params.id];
                         Model.first(updatedQuery, updatedParams).then((result: any) => {
-                            return apiResponse.success(res, 'Updated Successfully', result);
+                            return apiResponse.success(res, 'Status Updated Successfully', result);
                         }).catch((err: any) => {
                             return apiResponse.error(res, err.message, []);
                         });
@@ -110,7 +111,6 @@ userRouter.post('/status-update/:id', multer().none(),
                 }).catch((err: any) => {
                     return apiResponse.error(res, err.message, []);
                 });
-
             }
          }).catch((err: any) => {
             return apiResponse.error(res, err.message, []);

@@ -9,21 +9,26 @@ const Model =  {
     async queryExecute(query: string, params: any = [], isSingle: boolean = false) {
         const connectionState = await Connection.getConnection();
         try {
-            let result = await new Promise((resolve, reject) => {
+            return await new Promise((resolve, reject) => {
+
                 connectionState.query(query, params, (err: any, result: any) => {
                     if (err) {
                         reject(err);
                     } else {
                         if (isSingle) {
-                            resolve(result[0]);
+
+                            if (result.length > 0) {
+                                resolve(result[0]);
+                            } else {
+                                resolve(null);
+                            }
+
                         } else {
                             resolve(result);
                         }
                     }
                 });
             });
-            connectionState.end();
-            return result;
         } catch (err) {
             return Promise.reject(err);
         }
