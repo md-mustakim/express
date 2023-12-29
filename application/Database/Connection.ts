@@ -25,7 +25,6 @@ export default class Connection {
             this.connection = mysql.createPool(this.databaseConfig());
         }
         console.log('Establishing OLD Database Connection .................... ');
-        console.log(this.connection);
         return this.connection;
     }
 
