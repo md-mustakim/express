@@ -11,6 +11,7 @@ import HelperFunction from "./application/Helper/HelperFunction";
 
 import cors from "cors";
 import organizerRouter from './application/Router/api/v1/organizerRouter';
+import userRouter from "./application/Router/api/v1/userRouter";
 
 const app: Express = express();
 const port = 4000;
@@ -32,6 +33,7 @@ app.use('/api/v1/auth', guestRouter);
 
 app.use('/api/v1', authenticateRouter);
 app.use('/api/v1/organizer', organizerRouter);
+app.use('/api/v1/user', userRouter);
 
 
 

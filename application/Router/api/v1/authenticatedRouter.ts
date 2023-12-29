@@ -7,23 +7,6 @@ import Model from "../../../Helper/Model";
 import {authenticateRouter} from "./router";
 
 
-authenticateRouter.get('/user', (req, res) => {
-    
-    const allUserQuery = 'select * from users';
-    Model.get(allUserQuery).then((result: any) => {
-        const users = result.map((user: any) => {
-            user.password = undefined;
-            return user;
-        });
-        apiResponse.success(res, 'All User', users);
-    }).catch((err: any) => {
-        apiResponse.error(res, 'Error', err);
-    });
-});
-
-
-
-
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
 
@@ -35,7 +18,7 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ storage: storage });
+
 
 authenticateRouter.use(express.static('public'));
 authenticateRouter.use(express.static('event'));
@@ -88,11 +71,9 @@ authenticateRouter.get('/event-by-organization/:id', (req, res) => {
 
 const eventStorage = multer.diskStorage({
     destination: function (req, file, cb) {
-        
         cb(null, 'public/event');
     },
     filename: function (req, file, cb) {
-        
         cb(null, Date.now() + '-' + file.originalname);
     }
 });

@@ -1,4 +1,4 @@
-import {  Request, Response } from 'express';
+import {Request, Response} from 'express';
 import {body, validationResult} from "express-validator";
 import HelperFunction from "../../../Helper/HelperFunction";
 import apiResponse from "../../../Helper/apiResponse";
@@ -63,29 +63,28 @@ guestRouter.post('/login',[
     let query = "SELECT * FROM users WHERE phone = ?";
     let params = [phone];
     Model.first(query, params).then((result: any) => {
-        if (result.length > 0) {
-            let passwordVerify = Model.passwordVerify(password, result[0].password);
+        if (result) {
+            let passwordVerify = Model.passwordVerify(password, result.password);
             if (passwordVerify) {
-                let accessToken = Model.createJWTToken({id: result[0].id});
+                let accessToken = Model.createJWTToken({id: result.id});
 
                 // store token in database for future use
                 let query = "INSERT INTO access_tokens (name, token, expired_at, user_id, ip, u_a) VALUES (?, ?, ?, ?, ?, ?)";
-                let params = ['access_token', accessToken, HelperFunction.getDateTime(3600), result[0].id, req.ip, req.headers['user-agent']];
+                let params = ['access_token', accessToken, HelperFunction.getDateTime(3600), result.id, req.ip, req.headers['user-agent']];
 
                 Model.queryExecute(query, params).then(r => {
-                    // console.log(r);
+                    // console.info(r);
                 });
 
-                let user = result[0];
                 // remove password from user object
-                delete user.password;
+                delete result.password;
 
                 return apiResponse.success(res, 'Login is Successful', {
                     accessToken: {
                         token: accessToken,
                         expiresInSec: 3600 * 24
                     },
-                    user: result[0]
+                    user: result
                 });
             } else {
                 return apiResponse.unauthorized(res, 'Password is incorrect', []);

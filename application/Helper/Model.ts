@@ -6,35 +6,26 @@ import HelperFunction from "./HelperFunction";
 
 const Model =  {
 
-    async queryExecute(query: string, params: any = []) {
+    async queryExecute(query: string, params: any = [], isSingle: boolean = false) {
         const connectionState = await Connection.getConnection();
-
         try {
-            
-            // create connection 
-            
-
-            
             let result = await new Promise((resolve, reject) => {
                 connectionState.query(query, params, (err: any, result: any) => {
                     if (err) {
                         reject(err);
                     } else {
-                        resolve(result);
+                        if (isSingle) {
+                            resolve(result[0]);
+                        } else {
+                            resolve(result);
+                        }
                     }
                 });
             });
-
             connectionState.end();
             return result;
-
         } catch (err) {
             return Promise.reject(err);
-        } finally {
-            
-                // await Connection.closeConnection();                
-            
-
         }
 
     },
@@ -42,7 +33,7 @@ const Model =  {
         return await this.queryExecute(query, params);
     },
      async first(query: string, params: any = []) {
-    return  await this.queryExecute(query + ' limit 1', params);
+    return  await this.queryExecute(query + ' limit 1', params, true);
 
     },
     passwordVerify(password: string, hash: string) {
@@ -56,15 +47,11 @@ const Model =  {
         console.log(token);
         return jwt.sign(payload, token, { expiresIn: '1h' });
     },
-    verifyJWTToken(token: string) {
-
+    verifyJWTToken(token: string): boolean {
         try{
-
             let secret: any = HelperFunction.env('TOKEN_SECRET');
             jwt.verify(token, secret, (err: any, decoded: any) => {
                 console.log(err, decoded);
-
-
             });
             return true;
         }catch(err){

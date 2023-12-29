@@ -1,4 +1,4 @@
-import express, { Express, Request, Response, NextFunction } from 'express';
+import  { Request, Response, NextFunction } from 'express';
 import apiResponse from "../Helper/apiResponse";
 import jwt from "jsonwebtoken";
 import Model from "../Helper/Model";
@@ -16,19 +16,17 @@ export const VerifyToken = (req: Request, res: Response, next: NextFunction) => 
                 let query = "SELECT * FROM users WHERE id = ?";
                 let params = [decoded.id];
                 Model.first(query, params).then((result: any) => {
-                    if (result.length > 0) {
-                        req.body.user = result[0];
+                    if (result) {
+                        req.body.user = result;
                         return next();
                     } else {
                         return apiResponse.unauthorized(res, 'Invalid Token', []);
                     }
                 }).catch((err: any) => {
-                    return apiResponse.unauthorized(res, 'Invalid Token', []);
+                    return apiResponse.unauthorized(res, 'Invalid Token', [err]);
                 });
             }
         });
-
-
     } else {
         return apiResponse.unauthorized(res, 'Token Required', []);
     }
