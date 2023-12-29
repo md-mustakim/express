@@ -87,20 +87,17 @@ authenticateRouter.post('/event', eventImageUpload.single('cover'),[
         let query = "SELECT id,slug FROM organizer_events WHERE slug = ?";
         let params = [value];
         return Model.first(query, params).then((result: any) => {
-            if (result.length > 0) {
+            if (result) {
                 throw new Error('Slug already in use');
             }
         }).catch((err: any) => {
+
             throw new Error(err.message);
         })}),
     body('description').notEmpty().withMessage('Description is required'),
     body('organizer_id').notEmpty().withMessage('Organizer is required'),
     body('category_id').notEmpty().withMessage('Category is required'),
-    body('ticket_price').notEmpty().withMessage('Ticket Price is required'),
     body('story').notEmpty().withMessage('Story is required'),
-    body('venue_id').notEmpty().withMessage('Venue is required'),
-    body('features_id').notEmpty().withMessage('Features is required'),
-
 
 ], (req: Request, res: Response) => {
     if(!req.file){
@@ -113,11 +110,11 @@ authenticateRouter.post('/event', eventImageUpload.single('cover'),[
     }
 
     let body = req.body;
-    let {name, slug, description, organizer_id, scheduled_at, category_id, ticket_price, about, story, venue_id, features_id} = body;
+    let {name, slug, description, organizer_id, scheduled_at, category_id,  about, story, features_id} = body;
     let cover = req.file.filename;
     
-    const organizerEventQuery = 'INSERT INTO `organizer_events`(`name`, `slug`, `description`, `category_id`, `cover`, `scheduled_at`, `ticket_price`, `about`, `story`, `venue_id`, `organizer_id`, `features_id`, `created_by`, `u_a`, `ip`, `created_at`, `updated_at`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
-    const organizerEventParams = [name, slug, description, category_id, cover, scheduled_at, ticket_price, about, story, venue_id, organizer_id, features_id,1, req.headers['user-agent'], req.ip, HelperFunction.getDateTime(0), HelperFunction.getDateTime(0)];
+    const organizerEventQuery = 'INSERT INTO `organizer_events`(`name`, `slug`, `description`, `category_id`, `cover`, `scheduled_at`, `about`, `story`, `organizer_id`, `features_id`, `created_by`, `u_a`, `ip`, `created_at`, `updated_at`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+    const organizerEventParams = [name, slug, description, category_id, cover, scheduled_at,  about, story,  organizer_id, features_id,1, req.headers['user-agent'], req.ip, HelperFunction.getDateTime(0), HelperFunction.getDateTime(0)];
 
     Model.queryExecute(organizerEventQuery, organizerEventParams).then((result: any) => {
         
@@ -152,7 +149,12 @@ authenticateRouter.post('/venue',[
     const venueParams = [name, address, latitude, longitude, google_map_url, req.headers['user-agent'], req.ip, 1, HelperFunction.getDateTime(0), HelperFunction.getDateTime(0)];
 
     Model.queryExecute(venueQuery, venueParams).then((result: any) => {
-        return apiResponse.success(res, 'Venue Create successfully', [result]);
+        if(result.affectedRows > 0){
+            return apiResponse.success(res, 'Venue Create successfully', []);
+        }else {
+            return apiResponse.error(res, 'Something is went to wrong', []);
+        }
+
     }).catch((err: any) => {
         return apiResponse.error(res, err.message, []);
     });
