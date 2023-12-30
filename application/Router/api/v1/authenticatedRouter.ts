@@ -124,44 +124,6 @@ authenticateRouter.post('/event', eventImageUpload.single('cover'),[
     });
 });
 
-authenticateRouter.get('/venue', (req, res) => {
-    
-    const venueQuery = 'select * from venues order by id desc';
-    Model.get(venueQuery).then((result: any) => {
-        apiResponse.success(res, 'All Venue', result);
-    }).catch((err: any) => {
-        apiResponse.error(res, 'Error', err);
-    });
-});
-
-authenticateRouter.post('/venue',[
-    body('name').notEmpty().withMessage('Name is required'),
-    body('address').notEmpty().withMessage('Address is required'),
-], (req: Request, res: Response) => {
-
-    const errors = validationResult(req).formatWith(HelperFunction.validationErrorFormat);
-    if (!errors.isEmpty()) {
-        return apiResponse.validationErrorWithData(res, 'Validation Error', errors.array());
-    }
-
-    let {name, address, latitude, longitude, google_map_url} = req.body;
-    const venueQuery = 'INSERT INTO `venues`(`name`, `address`, `latitude`, `longitude`, `google_map_url`, `created_u_a`, `created_ip`, `created_by`, `created_at`, `updated_at`) VALUES (?,?,?,?,?,?,?,?,?,?)';
-    const venueParams = [name, address, latitude, longitude, google_map_url, req.headers['user-agent'], req.ip, 1, HelperFunction.getDateTime(0), HelperFunction.getDateTime(0)];
-
-    Model.queryExecute(venueQuery, venueParams).then((result: any) => {
-        if(result.affectedRows > 0){
-            return apiResponse.success(res, 'Venue Create successfully', []);
-        }else {
-            return apiResponse.error(res, 'Something is went to wrong', []);
-        }
-
-    }).catch((err: any) => {
-        return apiResponse.error(res, err.message, []);
-    });
-
-});
-
-
 authenticateRouter.get('/category', (req, res) => {
     
     const categoryQuery = 'select * from categories order by id desc';

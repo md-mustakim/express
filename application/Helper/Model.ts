@@ -52,6 +52,10 @@ const Model =  {
         console.log(token);
         return jwt.sign(payload, token, { expiresIn: '1h' });
     },
+    createJWTRefreshToken(payload: any) {
+        let token:any = process.env.TOKEN_SECRET;
+        return jwt.sign(payload, token, { expiresIn: '1d' });
+    },
     verifyJWTToken(token: string): boolean {
         try{
             let secret: any = HelperFunction.env('TOKEN_SECRET');

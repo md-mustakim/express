@@ -12,6 +12,9 @@ import HelperFunction from "./application/Helper/HelperFunction";
 import cors from "cors";
 import organizerRouter from './application/Router/api/v1/organizerRouter';
 import userRouter from "./application/Router/api/v1/userRouter";
+import theaterRoomRouter from "./application/Router/api/v1/theaterRoomRouter";
+import seatLayoutRouter from "./application/Router/api/v1/seatLayoutRouter";
+import venueRouter from "./application/Router/api/v1/venueRouter";
 
 const app: Express = express();
 const port = 4000;
@@ -34,6 +37,10 @@ app.use('/api/v1/auth', guestRouter);
 app.use('/api/v1', authenticateRouter);
 app.use('/api/v1/organizer', organizerRouter);
 app.use('/api/v1/user', userRouter);
+app.use('/api/v1/theater-room', theaterRoomRouter);
+app.use('/api/v1/seat-layout', seatLayoutRouter);
+app.use('/api/v1/venue', venueRouter);
+
 
 
 

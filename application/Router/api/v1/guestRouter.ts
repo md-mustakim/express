@@ -43,8 +43,18 @@ guestRouter.post('/register',[
     let query = "INSERT INTO users (name, phone, password) VALUES (?, ?, ?)";
     let params = [name, phone, password];
     Model.queryExecute(query, params).then((result: any) => {
-        
-        return apiResponse.success(res, 'Registration is Successful', []);
+        if(result.affectedRows > 0){
+            let updatedQuery = "SELECT * FROM users WHERE id = ?";
+            let updatedParams = [result.insertId];
+            Model.first(updatedQuery, updatedParams).then((result: any) => {
+                return apiResponse.success(res, 'Registration is Successful', result);
+            }).catch((err: any) => {
+                return apiResponse.error(res, err.message, []);
+            });
+        }else {
+            return apiResponse.error(res, 'Something is went to wrong', []);
+        }
+
     }).catch((err: any) => {
         return apiResponse.error(res, err.message, []);
     });
@@ -67,10 +77,12 @@ guestRouter.post('/login',[
             let passwordVerify = Model.passwordVerify(password, result.password);
             if (passwordVerify) {
                 let accessToken = Model.createJWTToken({id: result.id});
+                let refreshToken = Model.createJWTRefreshToken({id: result.id});
+
 
                 // store token in database for future use
-                let query = "INSERT INTO access_tokens (name, token, expired_at, user_id, ip, u_a) VALUES (?, ?, ?, ?, ?, ?)";
-                let params = ['access_token', accessToken, HelperFunction.getDateTime(3600), result.id, req.ip, req.headers['user-agent']];
+                let query = "INSERT INTO access_tokens (name, token, expired_at, refresh_token, refresh_token_expired_at, user_id, ip, u_a) VALUES (?, ?,?, ?, ?, ?, ?, ?)";
+                let params = ['access_token', accessToken, HelperFunction.getDateTime(3600), refreshToken, HelperFunction.getDateTime(3600 * 24), result.id, HelperFunction.ipv4AndIpv6(req.ip).ipv4Address, req.headers['user-agent']];
 
                 Model.queryExecute(query, params).then(r => {
                     // console.info(r);
@@ -82,6 +94,10 @@ guestRouter.post('/login',[
                 return apiResponse.success(res, 'Login is Successful', {
                     accessToken: {
                         token: accessToken,
+                        expiresInSec: 3600
+                    },
+                    refreshToken: {
+                        token: refreshToken,
                         expiresInSec: 3600 * 24
                     },
                     user: result

@@ -13,11 +13,16 @@ export const VerifyToken = (req: Request, res: Response, next: NextFunction) => 
             if (err) {
                 return apiResponse.unauthorized(res, 'Invalid Token', []);
             } else {
+
                 let query = "SELECT * FROM users WHERE id = ?";
                 let params = [decoded.id];
+
                 Model.first(query, params).then((result: any) => {
                     if (result) {
                         req.body.user = result;
+
+
+
                         return next();
                     } else {
                         return apiResponse.unauthorized(res, 'Invalid Token', []);
