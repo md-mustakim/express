@@ -4,9 +4,10 @@ import HelperFunction from "../../../Helper/HelperFunction";
 import apiResponse from "../../../Helper/apiResponse";
 import Model from "../../../Helper/Model";
 import {guestRouter} from "./router";
+import multer from "multer";
 
 
-guestRouter.post('/register',[
+guestRouter.post('/register', multer().none(), [
     body('name')
         .isLength({ min: 3 })
         .withMessage('Name must be at least 3 characters long.'),
@@ -19,7 +20,7 @@ guestRouter.post('/register',[
             let query = "SELECT * FROM users WHERE phone = ?";
             let params = [value];
             return Model.first(query, params).then((result: any) => {
-                if (result.length > 0) {
+                if (result) {
                     throw new Error('Phone number already in use');
                 }
             }).catch((err: any) => {
@@ -36,8 +37,6 @@ guestRouter.post('/register',[
     if (!errors.isEmpty()) {
         return apiResponse.validationErrorWithData(res, 'Validation Error', errors.array());
     }
-
-    
     let {name, phone, password} = req.body;
         password = Model.passwordHash(password);
     let query = "INSERT INTO users (name, phone, password) VALUES (?, ?, ?)";
@@ -47,6 +46,7 @@ guestRouter.post('/register',[
             let updatedQuery = "SELECT * FROM users WHERE id = ?";
             let updatedParams = [result.insertId];
             Model.first(updatedQuery, updatedParams).then((result: any) => {
+                delete result.password;
                 return apiResponse.success(res, 'Registration is Successful', result);
             }).catch((err: any) => {
                 return apiResponse.error(res, err.message, []);
@@ -60,7 +60,7 @@ guestRouter.post('/register',[
     });
 });
 
-guestRouter.post('/login',[
+guestRouter.post('/login', multer().none(), [
     body('phone').isLength({ min: 11, max:11 }).withMessage('Phone number must be 11 digits.'),
 ], (req: Request, res: Response) => {
 

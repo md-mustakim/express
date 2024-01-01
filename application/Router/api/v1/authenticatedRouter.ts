@@ -1,4 +1,4 @@
-import express, {  Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 import {body, validationResult} from "express-validator";
 import multer from "multer";
 import apiResponse from "../../../Helper/apiResponse";
@@ -9,11 +9,9 @@ import {authenticateRouter} from "./router";
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-
         cb(null, 'public/organizer');
     },
     filename: function (req, file, cb) {
-
         cb(null, Date.now() + '-' + file.originalname);
     }
 });
@@ -193,6 +191,7 @@ authenticateRouter.get('/district', (req, res) => {
     });
 });
 
+
 authenticateRouter.post('/district',[
     body('name').notEmpty().withMessage('Name is required'),
 
@@ -211,6 +210,114 @@ authenticateRouter.post('/district',[
         return apiResponse.error(res, err.message, []);
     });
 });
+
+
+
+
+
+
+
+
+
+
+
+authenticateRouter.post('/auth/reset-password/:id', multer().none(), [
+    body('new_password').notEmpty().isLength({ min: 8 }).withMessage('Password must be at least 8 characters long.'),
+    body('confirm_password').custom((value: string, {req}) => {
+        let {new_password} = req.body;
+        if(value !== new_password){
+            throw new Error('Password not match');
+        }
+        if(value.length < 8){
+            throw new Error('Password must be at least 8 characters long.');
+        }
+        return true;
+    })
+
+],(req: Request, res: Response)=>{
+    const errors = validationResult(req).formatWith(HelperFunction.validationErrorFormat);
+    if (!errors.isEmpty()) {
+        return apiResponse.validationErrorWithData(res, 'Validation Error', errors.array());
+    }
+
+    let userId = [req.params.id];
+    let {new_password} = req.body;
+
+    // check user
+    const userQuery:string = 'select * from users where id = ?';
+
+    Model.first(userQuery, userId).then((result: any) => {
+        if(result == null){
+            return apiResponse.notFound(res, 'User not found', []);
+        }else {
+            let password = Model.passwordHash(new_password);
+            let query = "UPDATE users SET password = ?, updated_at = ? WHERE id = ?";
+            let params = [password, HelperFunction.getDateTime(0), req.params.id];
+
+            Model.queryExecute(query, params).then((result: any) => {
+                if (result.affectedRows > 0) {
+                    return apiResponse.success(res, 'Password Reset Successfully', []);
+                } else {
+                    return apiResponse.error(res, 'Error', []);
+                }
+            }).catch((err: any) => {
+                return apiResponse.error(res, err.message, []);
+            });
+        }
+    }).catch((err: any) => {
+        return apiResponse.error(res, err.message, []);
+    });
+});
+
+
+authenticateRouter.post('/auth/change-password', multer().none(), [
+    body('current_password').custom(async (value: string, {req}) => {
+        let user = req.app.get('user');
+
+        if(!Model.passwordVerify(value, user.password)){
+            throw new Error('Current password not match');
+        }
+        return true;
+    }),
+    body('new_password').notEmpty().isLength({ min: 8 }).withMessage('Password must be at least 8 characters long.'),
+    body('confirm_password').custom((value: string, {req}) => {
+        let {new_password} = req.body;
+        if(value !== new_password){
+            throw new Error('Password not match');
+        }
+        if(value.length < 8){
+            throw new Error('Password must be at least 8 characters long.');
+        }
+        return true;
+    })
+
+],(req: Request, res: Response)=>{
+    const errors = validationResult(req).formatWith(HelperFunction.validationErrorFormat);
+    if (!errors.isEmpty()) {
+        return apiResponse.validationErrorWithData(res, 'Validation Error', errors.array());
+    }
+    let user = req.app.get('user');
+    let {new_password} = req.body;
+    let password = Model.passwordHash(new_password);
+    let query = "UPDATE users SET password = ?, updated_at = ? WHERE id = ?";
+    let params = [password, HelperFunction.getDateTime(0), user.id];
+
+    Model.queryExecute(query, params).then((result: any) => {
+        if (result.affectedRows > 0) {
+            return apiResponse.success(res, 'Password change Successfully', []);
+        } else {
+            return apiResponse.error(res, 'Error', []);
+        }
+    }).catch((err: any) => {
+        return apiResponse.error(res, err.message, []);
+    });
+});
+
+
+
+
+
+
 
 
 

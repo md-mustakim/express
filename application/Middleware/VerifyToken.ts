@@ -19,10 +19,7 @@ export const VerifyToken = (req: Request, res: Response, next: NextFunction) => 
 
                 Model.first(query, params).then((result: any) => {
                     if (result) {
-                        req.body.user = result;
-
-
-
+                        req.app.set('user', result);
                         return next();
                     } else {
                         return apiResponse.unauthorized(res, 'Invalid Token', []);
