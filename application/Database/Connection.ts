@@ -7,25 +7,16 @@ export default class Connection {
 
     private static databaseConfig()  {
         configDotenv.config();
+
         return {
-            host: "127.0.0.1",
-            user: "builderl_tms",
-            password: "builderl_tms",
-            database: "builderl_tms",
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME,
             waitForConnections: true,
             connectionLimit: 10,
             queueLimit: 0
         }
-
-        // return {
-        //     host: process.env.DB_HOST,
-        //     user: process.env.DB_USER,
-        //     password: process.env.DB_PASSWORD,
-        //     database: process.env.DB_NAME,
-        //     waitForConnections: true,
-        //     connectionLimit: 10,
-        //     queueLimit: 0
-        // }
     }
 
 
